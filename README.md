@@ -2,7 +2,7 @@
 
 Bản demo nội bộ của team SEO: giao diện trang /laptop của Thế Giới Di Động với bộ lọc đề xuất.
 
-- `tinh-gon/`: bản tinh gọn bộ lọc hiện có (1 cấp, 11 bộ lọc, 65 nút).
+- `tinh-gon/`: bản tinh gọn bộ lọc hiện có (1 cấp, 11 bộ lọc, 64 nút).
 - `3-cap/`: bản 3 cấp (cấp 2, 3 hiện thành hàng nút khi bấm vào nút cha; Bàn phím, Bảo mật là chip xổ xuống không có trang riêng).
 - `so-sanh/`: so sánh bộ lọc hiện tại và bản tinh gọn, chuyển qua lại Hiện tại / Cạnh nhau / Tinh gọn.
 - Nút gộp / tách / đổi tên / mới so với bộ lọc hiện tại có nhãn và ghi chú ngay trên nút, tắt được bằng ô "Hiện ghi chú".
