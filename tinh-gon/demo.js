@@ -164,7 +164,7 @@
     const ban = D.ban === 'tinh-gon' ? 'Demo bản tinh gọn bộ lọc hiện có (1 cấp)' : 'Demo bản 3 cấp';
     const link = D.so_sanh ? `<a href="${esc(D.so_sanh)}">So sánh với bộ lọc hiện tại →</a>` : '';
     document.body.insertAdjacentHTML('afterbegin', `<div id="demo-notebar"><b>${ban}</b>
-      <span class="demo-leg">So với bộ lọc hiện tại trên web: ${tagHtml({ k: 'gop', tag: 'Gộp' })} nhiều nút thành 1 ${tagHtml({ k: 'tach', tag: 'Tách' })} 1 nút thành nhiều ${tagHtml({ k: 'doi', tag: 'Đổi tên' })} ${tagHtml({ k: 'moi', tag: 'Mới' })} nút thêm mới.${D.co_nhan_nhom ? ` ${tagHtml({ k: 'xo', tag: 'Nhãn nhóm' })} chữ gom các nút bên cạnh, không bấm được, không có trang riêng.` : ''} Nhãn nhỏ mờ ở góc nút, rê chuột vào nút để đọc chi tiết. Nút không có nhãn là giữ nguyên.</span>
+      <span class="demo-leg">So với bộ lọc hiện tại trên web: ${tagHtml({ k: 'gop', tag: 'Gộp' })} nhiều nút thành 1 ${tagHtml({ k: 'tach', tag: 'Tách' })} 1 nút thành nhiều ${tagHtml({ k: 'doi', tag: 'Đổi tên' })} ${tagHtml({ k: 'moi', tag: 'Mới' })} nút thêm mới.${D.co_nhan_nhom ? ` ${tagHtml({ k: 'xo', tag: 'Chip gập' })} chip có mũi tên ▾, bấm mới mở các nút bên trong, chip không có trang riêng.` : ''} Nhãn nhỏ mờ ở góc nút, rê chuột vào nút để đọc chi tiết. Nút không có nhãn là giữ nguyên.</span>
       <label><input type="checkbox" id="demo-notetoggle" checked> Hiện ghi chú</label>${link}</div>`);
     $('#demo-notetoggle').addEventListener('change', e => document.body.classList.toggle('demo-hide-notes', !e.target.checked));
   }
@@ -224,8 +224,10 @@
     const img = src ? `<div class="w-full h-auto overflow-hidden relative" style="height: 40px; width: 40px;"><img width="40" height="40" alt="" loading="lazy" class="object-contain" src="${esc(src)}" style="width: 40px; height: 40px;"></div>` : '';
     return `<a class="${(on ? VALUE_ON : VALUE_CLS) + noteAttr(id).cls}" data-pnode="${esc(id)}"${faded(id)}>${img}${nutLabel(id)}${noteAttr(id).inner}</a>`;
   }
-  /* nhãn nhóm: chữ gom 2 đến 3 nút khác thông số (Bàn phím, Bảo mật). Không bấm được, không có trang riêng;
-     các nút đứng cạnh nhãn là nút cấp 1, luôn hiện sẵn, mỗi nút một trang. */
+  /* chip gập: gom 2 đến 3 nút khác thông số (Bàn phím, Bảo mật). Mặc định gập lại, chỉ thấy chip có mũi tên ▾;
+     bấm chip thì các nút bên trong hiện ngay trong hàng, trong khung xám (bấm nhãn ▴ để gập lại).
+     Chip không có trang riêng; các nút bên trong là nút cấp 1, mỗi nút một trang. Đã chọn nút bên trong thì tự mở. */
+  const openGrp = new Set();
   function groupChips(g, S) {
     const ids = g.nut.filter(visible), seen = new Set();
     let out = '';
@@ -234,8 +236,15 @@
       if (!lab) { out += valueBtn(id, S.has(id), g.ten === 'Nhu cầu sử dụng'); continue; }
       if (seen.has(lab)) continue;
       seen.add(lab);
-      out += `<div class="demo-grp" title="Nhãn nhóm: chỉ là chữ gom các nút, không bấm được, không có trang riêng. Các nút bên cạnh là nút có trang riêng."><span class="demo-grplab">${esc(lab)}</span>` +
-        ids.filter(x => N[x].nhan_nhom === lab).map(x => valueBtn(x, S.has(x), false)).join('') + '</div>';
+      const key = g.id + '/' + ascii(lab), kids = ids.filter(x => N[x].nhan_nhom === lab);
+      const on = kids.some(x => S.has(x)), open = on || openGrp.has(key);
+      if (open) {
+        out += `<div class="demo-grp"><a class="demo-grplab demo-grptoggle" data-pgrp="${esc(key)}" title="Bấm để gập lại">${esc(lab)} ▴</a>` +
+          kids.map(x => valueBtn(x, S.has(x), false)).join('') + '</div>';
+      } else {
+        const note = '<i class="demo-corner demo-corner-xo" data-note="Chip gập: bấm để mở các nút bên trong. Chip không có trang riêng; các nút bên trong có trang riêng.">Chip gập</i>';
+        out += `<a class="${VALUE_CLS} demo-has-note" data-pgrp="${esc(key)}"><span>${esc(lab)}</span><span style="font-size:10px">▾</span>${note}</a>`;
+      }
     }
     return out;
   }
@@ -347,9 +356,10 @@
   document.addEventListener('click', e => {
     // Nút trong hàng nút, chip, hàng nhanh đều là link thật (href) nên trình duyệt tự chuyển sang trang mới.
     // Ở đây chỉ xử lý những thứ nằm trong trang: mở/đóng bảng Lọc, chọn trong bảng, Xem thêm.
-    const t = e.target.closest('[id^=demo-],[data-pnode],[data-pbrand]');
+    const t = e.target.closest('[id^=demo-],[data-pnode],[data-pbrand],[data-pgrp]');
     if (!t) return;
     const d = t.dataset;
+    if (d.pgrp) { openGrp.has(d.pgrp) ? openGrp.delete(d.pgrp) : openGrp.add(d.pgrp); return mountPopup(); }   // gập / mở chip gập
     if (t.id === 'demo-lockbtn') return popOpen ? closePopup(false) : openPopup();
     if (t.id === 'demo-veil' || t.id === 'demo-pclose') return closePopup(false);
     if (t.id === 'demo-ok') return closePopup(true);
