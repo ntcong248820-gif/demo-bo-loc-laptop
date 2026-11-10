@@ -164,7 +164,7 @@
     const ban = D.ban === 'tinh-gon' ? 'Demo bản tinh gọn bộ lọc hiện có (1 cấp)' : 'Demo bản 3 cấp';
     const link = D.so_sanh ? `<a href="${esc(D.so_sanh)}">So sánh với bộ lọc hiện tại →</a>` : '';
     document.body.insertAdjacentHTML('afterbegin', `<div id="demo-notebar"><b>${ban}</b>
-      <span class="demo-leg">So với bộ lọc hiện tại trên web: ${tagHtml({ k: 'gop', tag: 'Gộp' })} nhiều nút thành 1 ${tagHtml({ k: 'tach', tag: 'Tách' })} 1 nút thành nhiều ${tagHtml({ k: 'doi', tag: 'Đổi tên' })} ${tagHtml({ k: 'moi', tag: 'Mới' })} nút thêm mới.${D.co_nhan_nhom ? ` ${tagHtml({ k: 'xo', tag: 'Chip gập' })} chip có mũi tên ▾, bấm mới mở các nút bên trong (xếp dọc bên dưới, nối bằng đường kẻ), chip không có trang riêng.` : ''} Nhãn nhỏ mờ ở góc nút, rê chuột vào nút để đọc chi tiết. Nút không có nhãn là giữ nguyên.</span>
+      <span class="demo-leg">So với bộ lọc hiện tại trên web: ${tagHtml({ k: 'gop', tag: 'Gộp' })} nhiều nút thành 1 ${tagHtml({ k: 'tach', tag: 'Tách' })} 1 nút thành nhiều ${tagHtml({ k: 'doi', tag: 'Đổi tên' })} ${tagHtml({ k: 'moi', tag: 'Mới' })} nút thêm mới. Nhãn nhỏ mờ ở góc nút, rê chuột vào nút để đọc chi tiết. Nút không có nhãn là giữ nguyên.</span>
       <label><input type="checkbox" id="demo-notetoggle" checked> Hiện ghi chú</label>${link}</div>`);
     $('#demo-notetoggle').addEventListener('change', e => document.body.classList.toggle('demo-hide-notes', !e.target.checked));
   }
@@ -222,31 +222,10 @@
   function valueBtn(id, on, withImg) {
     const src = withImg ? D.anhNhuCau[NHU_CAU_ANH[id.split('/').pop()]] : '';
     const img = src ? `<div class="w-full h-auto overflow-hidden relative" style="height: 40px; width: 40px;"><img width="40" height="40" alt="" loading="lazy" class="object-contain" src="${esc(src)}" style="width: 40px; height: 40px;"></div>` : '';
-    const pick = animPick === id && N[id].nhan_nhom ? ' demo-pick' : '';   // nút trong chip gập vừa được chọn: nảy một lần
-    return `<a class="${(on ? VALUE_ON : VALUE_CLS) + noteAttr(id).cls + pick}" data-pnode="${esc(id)}"${faded(id)}>${img}${nutLabel(id)}${noteAttr(id).inner}</a>`;
+    return `<a class="${(on ? VALUE_ON : VALUE_CLS) + noteAttr(id).cls}" data-pnode="${esc(id)}"${faded(id)}>${img}${nutLabel(id)}${noteAttr(id).inner}</a>`;
   }
-  /* chip gập: gom 2 đến 3 nút khác thông số (Bàn phím, Bảo mật). Mặc định gập lại, chỉ thấy chip có mũi tên ▾;
-     bấm chip thì các nút bên trong hiện ngay trong hàng, trong khung xám (bấm nhãn ▴ để gập lại).
-     Chip không có trang riêng; các nút bên trong là nút cấp 1, mỗi nút một trang. Đã chọn nút bên trong thì tự mở. */
-  const openGrp = new Set();
-  let animKey = null, animPick = null;   // chip / nút vừa bấm: chỉ chúng chạy hiệu ứng, các lần vẽ lại khác không chạy lại
-  function groupChips(g, S) {
-    const ids = g.nut.filter(visible), seen = new Set();
-    let out = '';
-    for (const id of ids) {
-      const lab = N[id].nhan_nhom;
-      if (!lab) { out += valueBtn(id, S.has(id), g.ten === 'Nhu cầu sử dụng'); continue; }
-      if (seen.has(lab)) continue;
-      seen.add(lab);
-      const key = g.id + '/' + ascii(lab), kids = ids.filter(x => N[x].nhan_nhom === lab);
-      const on = kids.some(x => S.has(x)), open = on || openGrp.has(key);
-      const note = '<i class="demo-corner demo-corner-xo" data-note="Chip gập: bấm để mở các nút bên trong. Chip không có trang riêng; các nút bên trong có trang riêng.">Chip gập</i>';
-      const chip = `<a class="${(on ? VALUE_ON : VALUE_CLS)} demo-has-note demo-chip-gap${open ? ' is-open' : ''}" data-pgrp="${esc(key)}"${on ? ' title="Đang chọn nút bên trong nên chưa gập được"' : ''}><span>${esc(lab)}</span><span class="demo-chev">▾</span>${note}</a>`;
-      // mở ra thì thành cây: chip ở trên, các nút bên trong xếp dọc bên dưới, thụt vào và nối bằng đường kẻ
-      const kidsHtml = kids.map((x, i) => valueBtn(x, S.has(x), false).replace('<a ', `<a style="--i:${i}" `)).join('');
-      out += open ? `<div class="demo-tree${on ? ' has-pick' : ''}${animKey === key ? ' is-opening' : ''}"${on ? ' data-forced="1"' : ''}>${chip}<div class="demo-tree-kids">${kidsHtml}</div></div>` : chip;
-    }
-    return out;
+  function groupChips(g, S) {                                 // các nút cấp 1 của một bộ lọc, hiện hết ra ngoài
+    return g.nut.filter(visible).map(id => valueBtn(id, S.has(id), g.ten === 'Nhu cầu sử dụng')).join('');
   }
   function popupBody(st) {
     const S = new Set(st.sel);
@@ -356,32 +335,15 @@
   document.addEventListener('click', e => {
     // Nút trong hàng nút, chip, hàng nhanh đều là link thật (href) nên trình duyệt tự chuyển sang trang mới.
     // Ở đây chỉ xử lý những thứ nằm trong trang: mở/đóng bảng Lọc, chọn trong bảng, Xem thêm.
-    const t = e.target.closest('[id^=demo-],[data-pnode],[data-pbrand],[data-pgrp]');
+    const t = e.target.closest('[id^=demo-],[data-pnode],[data-pbrand]');
     if (!t) return;
     const d = t.dataset;
-    if (d.pgrp) {                                                  // gập / mở chip gập, có chuyển động
-      const tree = t.closest('.demo-tree');
-      if (!openGrp.has(d.pgrp)) {
-        openGrp.add(d.pgrp); animKey = d.pgrp; mountPopup(); animKey = null;
-        setTimeout(() => document.querySelectorAll('.demo-tree.is-opening').forEach(e => e.classList.remove('is-opening')), 450);   // xong hiệu ứng thì bỏ overflow ẩn để bóng đổ không bị cắt
-        return;
-      }
-      if (!tree || tree.dataset.forced) return;                  // đang chọn nút bên trong thì không gập
-      tree.classList.add('is-closing');
-      setTimeout(() => { openGrp.delete(d.pgrp); mountPopup(); }, 170);
-      return;
-    }
     if (t.id === 'demo-lockbtn') return popOpen ? closePopup(false) : openPopup();
     if (t.id === 'demo-veil' || t.id === 'demo-pclose') return closePopup(false);
     if (t.id === 'demo-ok') return closePopup(true);
     if (t.id === 'demo-reset') { Object.assign(pending, { sel: [], brands: [], pmin: PRICE_MIN, pmax: PRICE_MAX }); return mountPopup(); }
     if (t.id === 'demo-more') { state.shown += 20; return renderGrid(); }
-    if (d.pnode) {
-      const was = pending.sel.includes(d.pnode);
-      toggleNode(pending, d.pnode);
-      animPick = !was && pending.sel.includes(d.pnode) ? d.pnode : null;
-      mountPopup(); animPick = null; return;
-    }
+    if (d.pnode) { toggleNode(pending, d.pnode); return mountPopup(); }
     if (d.pbrand != null && d.pbrand !== '') {
       const b = Number(d.pbrand), i = pending.brands.indexOf(b);
       i >= 0 ? pending.brands.splice(i, 1) : pending.brands.push(b);

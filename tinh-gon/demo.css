@@ -32,41 +32,6 @@
 .demo-has-note:hover .demo-corner::after { display: block; }
 .demo-corner-gop { background: #fde68a; color: #78350f; } .demo-corner-tach { background: #bfdbfe; color: #1e3a8a; }
 .demo-corner-doi { background: #99f6e4; color: #134e4a; } .demo-corner-moi { background: #e9d5ff; color: #581c87; }
-.demo-tag-xo, .demo-corner-xo { background: #fed7aa; color: #7c2d12; }
-/* chip gập mở ra thành cây: chip ở trên, nút bên trong xếp dọc bên dưới, thụt vào, nối bằng đường kẻ chữ L bo góc.
-   Có hiệu ứng: rê chuột nổi nhẹ, nhấn lún, mũi tên xoay, cây trượt mở / gập, nút vừa chọn nảy một lần. */
-.demo-tree { --line: #cbd5e1; --blue: #2a83e9; display: flex; flex-direction: column; align-items: flex-start; }
-.demo-tree.has-pick { --line: var(--blue); }
-.demo-chip-gap { cursor: pointer; user-select: none; transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease; }
-.demo-chip-gap:not([class*="border-blue-5"]):hover { border-color: #94a3b8 !important; transform: translateY(-1px); box-shadow: 0 3px 10px rgba(15, 23, 42, .10); }
-.demo-chip-gap:active { transform: translateY(0) scale(.96); box-shadow: 0 1px 3px rgba(15, 23, 42, .12); }
-.demo-chev { display: inline-block; font-size: 10px; transition: transform .2s ease; }
-.demo-chip-gap.is-open .demo-chev { transform: rotate(180deg); }
-.demo-tree.is-closing .demo-chip-gap .demo-chev { transform: rotate(0deg); }
-.demo-tree.is-opening .demo-chev { animation: demo-chev-open .2s ease; }
-.demo-tree-kids { position: relative; display: flex; flex-direction: column; align-items: flex-start; gap: 8px; margin: 8px 0 0 14px; padding-left: 20px; }
-.demo-tree-kids > a { position: relative; cursor: pointer; transition: box-shadow .15s ease, border-color .15s ease, background-color .1s ease; }
-.demo-tree-kids > a:not([class*="border-blue-5"]):hover { border-color: #94a3b8 !important; box-shadow: 0 3px 10px rgba(15, 23, 42, .10); }
-.demo-tree-kids > a:active { background-color: #eef2f7 !important; }
-.demo-tree-kids > a::before { content: ''; position: absolute; box-sizing: border-box; pointer-events: none; left: -20px; width: 20px;
-  top: calc(-8px - 50%); height: calc(100% + 8px); border-left: 2px solid var(--line); border-bottom: 2px solid var(--line); transition: border-color .25s ease; }
-.demo-tree-kids > a:first-child::before { top: -8px; height: calc(50% + 8px); }
-.demo-tree-kids > a:last-child::before { border-bottom-left-radius: 8px; }
-.demo-tree.is-opening .demo-tree-kids { overflow: hidden; animation: demo-kids-in .22s ease both; }
-.demo-tree.is-opening .demo-tree-kids > a { animation: demo-kid-fade .2s ease both; animation-delay: calc(var(--i, 0) * 55ms); }
-.demo-tree.is-opening .demo-tree-kids > a::before { animation: demo-line-in .22s ease both; animation-delay: calc(var(--i, 0) * 55ms); }
-.demo-tree.is-closing .demo-tree-kids { overflow: hidden; animation: demo-kids-out .16s ease both; }
-.demo-pick { animation: demo-pick .45s ease-out; }
-@keyframes demo-chev-open { from { transform: rotate(0deg); } to { transform: rotate(180deg); } }
-@keyframes demo-kids-in { from { opacity: 0; max-height: 0; transform: translateY(-4px); } to { opacity: 1; max-height: 240px; transform: none; } }
-@keyframes demo-kids-out { from { opacity: 1; max-height: 240px; transform: none; } to { opacity: 0; max-height: 0; transform: translateY(-4px); } }
-@keyframes demo-kid-fade { from { opacity: 0; } to { opacity: 1; } }
-@keyframes demo-line-in { from { clip-path: inset(0 0 100% 0); } to { clip-path: inset(0 0 0 0); } }
-@keyframes demo-pick { 0% { box-shadow: 0 0 0 0 rgba(42, 131, 233, .45); } 100% { box-shadow: 0 0 0 10px rgba(42, 131, 233, 0); } }
-@media (prefers-reduced-motion: reduce) { .demo-chip-gap, .demo-chip-gap *, .demo-tree-kids, .demo-tree-kids * { animation: none !important; transition: none !important; } }
-#demo-pop .flex-wrap:has(> .demo-tree) { align-items: flex-start; }
-.demo-grp { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; background: #f4f5f7; border-radius: 10px; padding: 4px 8px 4px 12px; }
-.demo-grplab { font-size: 12px; color: #6b7280; white-space: nowrap; }
 .demo-gnote { font-size: 11px; font-weight: 400; color: #6b7280; margin-left: 8px; opacity: .55; }
 .demo-gnote .demo-tag { margin-left: 0; }
 body.demo-hide-notes #demo-filter-root .demo-corner, body.demo-hide-notes #demo-filter-root .demo-gnote { display: none; }
