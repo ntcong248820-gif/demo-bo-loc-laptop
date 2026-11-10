@@ -1,0 +1,29 @@
+/* Demo chỉ cần rất ít CSS riêng: giao diện dùng lại lớp CSS của chính web (đã chép về assets/css).
+   Nút/hàng nút/chip/bảng Lọc đều dùng đúng lớp trang thật nên không cần viết thêm. */
+#demo-filter-root { display: block; }
+#demo-filter-root a { text-decoration: none; }
+#demo-empty { padding: 60px 0; text-align: center; color: #667085; font-size: 15px; grid-column: 1 / -1; }
+/* thanh kéo giá: 2 núm kéo trên cùng 1 đường (trang thật làm bằng 2 ô range chồng nhau) */
+#demo-pmin, #demo-pmax { pointer-events: none; background: transparent; height: 4px; top: 0; }
+#demo-pmin::-webkit-slider-thumb, #demo-pmax::-webkit-slider-thumb {
+  pointer-events: auto; -webkit-appearance: none; appearance: none; width: 18px; height: 18px; border-radius: 50%;
+  background: #2a83e9; border: 2px solid #fff; box-shadow: 0 0 0 1px #2a83e9; cursor: pointer; }
+#demo-pmin::-moz-range-thumb, #demo-pmax::-moz-range-thumb {
+  pointer-events: auto; width: 16px; height: 16px; border-radius: 50%; background: #2a83e9; border: 2px solid #fff; cursor: pointer; }
+
+/* ghi chú thay đổi so với bộ lọc hiện tại: thanh trên cùng, nhãn trên nút, dòng ghi chú nhỏ */
+#demo-notebar { position: sticky; top: 0; z-index: 2000; background: #111827; color: #fff; font: 13px/1.5 Inter, system-ui, sans-serif;
+  padding: 8px 16px; display: flex; flex-wrap: wrap; gap: 6px 16px; align-items: center; }
+#demo-notebar a { color: #93c5fd; text-decoration: underline; }
+#demo-notebar label { cursor: pointer; }
+.demo-tag { display: inline-block; font-size: 11px; font-weight: 700; line-height: 1; padding: 3px 7px; border-radius: 999px; margin: 0 4px; vertical-align: middle; }
+.demo-tag-gop { background: #fde68a; color: #78350f; }
+.demo-tag-tach { background: #bfdbfe; color: #1e3a8a; }
+.demo-tag-doi { background: #99f6e4; color: #134e4a; }
+.demo-tag-moi { background: #e9d5ff; color: #581c87; }
+.demo-nut { display: flex; flex-direction: column; align-items: flex-start; }
+.demo-note { display: block; font-size: 11px; line-height: 1.3; margin-top: 2px; white-space: normal; max-width: 230px; text-align: left; }
+.demo-note-gop { color: #b45309; } .demo-note-tach { color: #1d4ed8; } .demo-note-doi { color: #0f766e; } .demo-note-moi { color: #7e22ce; }
+.demo-gnote { font-size: 12px; font-weight: 400; color: #6b7280; margin-left: 8px; }
+.demo-gnote .demo-tag { margin-left: 0; }
+body.demo-hide-notes #demo-filter-root .demo-tag, body.demo-hide-notes #demo-filter-root .demo-note, body.demo-hide-notes #demo-filter-root .demo-gnote { display: none; }
