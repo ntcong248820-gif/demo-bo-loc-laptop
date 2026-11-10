@@ -31,10 +31,10 @@
 .demo-has-note:hover .demo-corner { opacity: 1; }
 .demo-has-note:hover .demo-corner::after { display: block; }
 .demo-corner-gop { background: #fde68a; color: #78350f; } .demo-corner-tach { background: #bfdbfe; color: #1e3a8a; }
-.demo-corner-doi { background: #99f6e4; color: #134e4a; } .demo-corner-moi { background: #e9d5ff; color: #581c87; } .demo-corner-xo { background: #fed7aa; color: #7c2d12; }
+.demo-corner-doi { background: #99f6e4; color: #134e4a; } .demo-corner-moi { background: #e9d5ff; color: #581c87; }
 .demo-tag-xo { background: #fed7aa; color: #7c2d12; }
-.demo-droppanel { width: 100%; display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 10px; padding: 10px 12px; background: #f6f7f9; border-radius: 8px; }
-.demo-droplab { font-size: 12px; color: #6b7280; margin-right: 2px; }
+.demo-grp { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; background: #f4f5f7; border-radius: 10px; padding: 4px 8px 4px 12px; }
+.demo-grplab { font-size: 12px; color: #6b7280; white-space: nowrap; }
 .demo-gnote { font-size: 11px; font-weight: 400; color: #6b7280; margin-left: 8px; opacity: .55; }
 .demo-gnote .demo-tag { margin-left: 0; }
 body.demo-hide-notes #demo-filter-root .demo-corner, body.demo-hide-notes #demo-filter-root .demo-gnote { display: none; }

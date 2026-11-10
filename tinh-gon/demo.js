@@ -164,7 +164,7 @@
     const ban = D.ban === 'tinh-gon' ? 'Demo bản tinh gọn bộ lọc hiện có (1 cấp)' : 'Demo bản 3 cấp';
     const link = D.so_sanh ? `<a href="${esc(D.so_sanh)}">So sánh với bộ lọc hiện tại →</a>` : '';
     document.body.insertAdjacentHTML('afterbegin', `<div id="demo-notebar"><b>${ban}</b>
-      <span class="demo-leg">So với bộ lọc hiện tại trên web: ${tagHtml({ k: 'gop', tag: 'Gộp' })} nhiều nút thành 1 ${tagHtml({ k: 'tach', tag: 'Tách' })} 1 nút thành nhiều ${tagHtml({ k: 'doi', tag: 'Đổi tên' })} ${tagHtml({ k: 'moi', tag: 'Mới' })} nút thêm mới.${D.co_xo_xuong ? ` ${tagHtml({ k: 'xo', tag: 'Xổ xuống' })} chip mở ra các nút bên trong, không có trang riêng.` : ''} Nhãn nhỏ mờ ở góc nút, rê chuột vào nút để đọc chi tiết. Nút không có nhãn là giữ nguyên.</span>
+      <span class="demo-leg">So với bộ lọc hiện tại trên web: ${tagHtml({ k: 'gop', tag: 'Gộp' })} nhiều nút thành 1 ${tagHtml({ k: 'tach', tag: 'Tách' })} 1 nút thành nhiều ${tagHtml({ k: 'doi', tag: 'Đổi tên' })} ${tagHtml({ k: 'moi', tag: 'Mới' })} nút thêm mới.${D.co_nhan_nhom ? ` ${tagHtml({ k: 'xo', tag: 'Nhãn nhóm' })} chữ gom các nút bên cạnh, không bấm được, không có trang riêng.` : ''} Nhãn nhỏ mờ ở góc nút, rê chuột vào nút để đọc chi tiết. Nút không có nhãn là giữ nguyên.</span>
       <label><input type="checkbox" id="demo-notetoggle" checked> Hiện ghi chú</label>${link}</div>`);
     $('#demo-notetoggle').addEventListener('change', e => document.body.classList.toggle('demo-hide-notes', !e.target.checked));
   }
@@ -224,36 +224,27 @@
     const img = src ? `<div class="w-full h-auto overflow-hidden relative" style="height: 40px; width: 40px;"><img width="40" height="40" alt="" loading="lazy" class="object-contain" src="${esc(src)}" style="width: 40px; height: 40px;"></div>` : '';
     return `<a class="${(on ? VALUE_ON : VALUE_CLS) + noteAttr(id).cls}" data-pnode="${esc(id)}"${faded(id)}>${img}${nutLabel(id)}${noteAttr(id).inner}</a>`;
   }
-  /* chip xổ xuống: nhãn chủ đề (Bàn phím, Bảo mật), không có trang riêng. Bấm chip thì mở hàng nút bên trong, bấm nút đó mới sang trang của nút. */
-  const openDrops = new Set();
-  function dropChip(g, lab, ids, S) {
-    const key = g.id + '/' + ascii(lab), on = ids.some(x => S.has(x)), open = on || openDrops.has(key);
-    const note = '<i class="demo-corner demo-corner-xo" data-note="Chip xổ xuống: không có trang riêng. Các nút bên trong là nút có trang riêng.">Xổ xuống</i>';
-    return {
-      chip: `<a class="${(on ? VALUE_ON : VALUE_CLS)} demo-has-note" data-pdrop="${esc(key)}"><span>${esc(lab)}</span><span style="font-size:10px">${open ? '▴' : '▾'}</span>${note}</a>`,
-      panel: open ? `<div class="demo-droppanel"><span class="demo-droplab">${esc(lab)}</span>${ids.map(id => valueBtn(id, S.has(id), false)).join('')}</div>` : ''
-    };
-  }
-  function groupChips(g, S) {                                 // chip của một bộ lọc: nút thường + chip xổ xuống (gom các nút cùng nhãn)
+  /* nhãn nhóm: chữ gom 2 đến 3 nút khác thông số (Bàn phím, Bảo mật). Không bấm được, không có trang riêng;
+     các nút đứng cạnh nhãn là nút cấp 1, luôn hiện sẵn, mỗi nút một trang. */
+  function groupChips(g, S) {
     const ids = g.nut.filter(visible), seen = new Set();
-    let chips = '', panels = '';
+    let out = '';
     for (const id of ids) {
-      const lab = N[id].xo_xuong;
-      if (!lab) { chips += valueBtn(id, S.has(id), g.ten === 'Nhu cầu sử dụng'); continue; }
+      const lab = N[id].nhan_nhom;
+      if (!lab) { out += valueBtn(id, S.has(id), g.ten === 'Nhu cầu sử dụng'); continue; }
       if (seen.has(lab)) continue;
       seen.add(lab);
-      const d = dropChip(g, lab, ids.filter(x => N[x].xo_xuong === lab), S);
-      chips += d.chip; panels += d.panel;
+      out += `<div class="demo-grp" title="Nhãn nhóm: chỉ là chữ gom các nút, không bấm được, không có trang riêng. Các nút bên cạnh là nút có trang riêng."><span class="demo-grplab">${esc(lab)}</span>` +
+        ids.filter(x => N[x].nhan_nhom === lab).map(x => valueBtn(x, S.has(x), false)).join('') + '</div>';
     }
-    return { chips, panels };
+    return out;
   }
   function popupBody(st) {
     const S = new Set(st.sel);
     let h = '<div class="gap-8px flex flex-col"><div><p class="text-16 font-700 my-2">Thương hiệu</p><div class="gap-10px grid grid-cols-4 md:grid-cols-6">' +
       D.brands.map((b, i) => `<a class="${st.brands.includes(i) ? '!border-blue-5' : '!border-gray-1'} !text-black-7  h-40px flex items-center justify-center overflow-hidden rounded-8px border !bg-white p-1" data-pbrand="${i}"><div class="w-full h-auto overflow-hidden relative !w-full flex items-center justify-center" style="height: 30px; width: 100%;"><img height="30" alt="${esc(b.ten)}" class="!w-full object-contain" src="${esc(b.logo)}" style="width: 100%; height: 30px;"></div></a>`).join('') + '</div></div>';
     D.groups.forEach(g => {
-      const gc = groupChips(g, S);
-      h += `<div><p class="text-16 font-700 my-2">${esc(g.ten)}${groupNote(g)}</p><div class="gap-10px flex flex-wrap">` + gc.chips + '</div>' + gc.panels;
+      h += `<div><p class="text-16 font-700 my-2">${esc(g.ten)}${groupNote(g)}</p><div class="gap-10px flex flex-wrap items-center">` + groupChips(g, S) + '</div>';
       if (g.ten === 'Mức giá') {
         const lo = (st.pmin - PRICE_MIN) / 1e6, hi = (st.pmax - PRICE_MIN) / 1e6;
         h += `<div class="mt-10px gap-8px flex flex-col"><div class="gap-10px  grid grid-cols-[max-content_400px]">
@@ -356,7 +347,7 @@
   document.addEventListener('click', e => {
     // Nút trong hàng nút, chip, hàng nhanh đều là link thật (href) nên trình duyệt tự chuyển sang trang mới.
     // Ở đây chỉ xử lý những thứ nằm trong trang: mở/đóng bảng Lọc, chọn trong bảng, Xem thêm.
-    const t = e.target.closest('[id^=demo-],[data-pnode],[data-pbrand],[data-pdrop]');
+    const t = e.target.closest('[id^=demo-],[data-pnode],[data-pbrand]');
     if (!t) return;
     const d = t.dataset;
     if (t.id === 'demo-lockbtn') return popOpen ? closePopup(false) : openPopup();
@@ -364,7 +355,6 @@
     if (t.id === 'demo-ok') return closePopup(true);
     if (t.id === 'demo-reset') { Object.assign(pending, { sel: [], brands: [], pmin: PRICE_MIN, pmax: PRICE_MAX }); return mountPopup(); }
     if (t.id === 'demo-more') { state.shown += 20; return renderGrid(); }
-    if (d.pdrop) { openDrops.has(d.pdrop) ? openDrops.delete(d.pdrop) : openDrops.add(d.pdrop); return mountPopup(); }
     if (d.pnode) { toggleNode(pending, d.pnode); return mountPopup(); }
     if (d.pbrand != null && d.pbrand !== '') {
       const b = Number(d.pbrand), i = pending.brands.indexOf(b);
