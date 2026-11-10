@@ -233,7 +233,7 @@
       D.brands.map((b, i) => `<a class="${st.brands.includes(i) ? '!border-blue-5' : '!border-gray-1'} !text-black-7  h-40px flex items-center justify-center overflow-hidden rounded-8px border !bg-white p-1" data-pbrand="${i}"><div class="w-full h-auto overflow-hidden relative !w-full flex items-center justify-center" style="height: 30px; width: 100%;"><img height="30" alt="${esc(b.ten)}" class="!w-full object-contain" src="${esc(b.logo)}" style="width: 100%; height: 30px;"></div></a>`).join('') + '</div></div>';
     D.groups.forEach(g => {
       h += `<div><p class="text-16 font-700 my-2">${esc(g.ten)}${groupNote(g)}</p><div class="gap-10px flex flex-wrap items-center">` + groupChips(g, S) + '</div>';
-      if (g.ten === 'Mức giá') {
+      if (g.ten === 'Khoảng giá') {
         const lo = (st.pmin - PRICE_MIN) / 1e6, hi = (st.pmax - PRICE_MIN) / 1e6;
         h += `<div class="mt-10px gap-8px flex flex-col"><div class="gap-10px  grid grid-cols-[max-content_400px]">
           <p class="text-blue-5 flex-1"><i class="icon__row-4-col-21 mr-5px"></i>Hoặc chọn mức giá phù hợp với bạn</p>
