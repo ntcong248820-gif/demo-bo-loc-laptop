@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-<meta name="robots" content="noindex, nofollow">
 <meta charset="UTF-8">
+<meta name="robots" content="noindex, nofollow">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Công thức chọn chip — chạy thử Laptop</title>
 <!-- Trang tự chứa. Phụ thuộc mạng duy nhất: font Google (Be Vietnam Pro, JetBrains Mono); mất mạng thì dùng font hệ thống. -->
@@ -136,6 +136,12 @@ tfoot td{background:var(--surface2);font-weight:700;border-top:2px solid var(--b
 .card{background:var(--surface);border:1px solid var(--border);border-top:3px solid var(--merge);border-radius:10px;padding:14px 16px}
 .card h3{font-size:14px;margin-bottom:6px} .card--ok{border-top-color:var(--ok)} .card--note{border-top-color:var(--border2)} .st{display:inline-block;margin-left:6px;font-family:var(--mono);font-size:10px;font-weight:600;padding:1px 7px;border-radius:5px;vertical-align:middle} .st--ok{background:var(--ok-dim);color:var(--ok)} .st--wait{background:var(--merge-dim);color:var(--merge)} .st--note{background:var(--mid-dim);color:var(--mid)} .card p{font-size:12.5px;color:var(--dim);margin-bottom:6px} .card .opt{font-size:12.5px}
 .card .opt b{color:var(--accent)}
+/* phần lý do chọn công thức */
+.ld-h{font-size:15px;font-weight:700;margin:22px 0 10px} #ly-do .ld-h:first-of-type{margin-top:4px}
+.ld-t td{font-size:13px} .ld-t td.attr{min-width:200px} .ld-t td.num{text-align:left}
+tr.ld-pick td{background:var(--ok-dim)}
+.card ul.bl li{margin:3px 0}
+@media (max-width:860px){.ld-t thead{display:none} .ld-t tr{display:block;padding:10px 12px;border-bottom:1px solid var(--border)} .ld-t td{display:block;border:none;padding:2px 0;min-width:0!important}}
 @media (max-width:860px){.rule,.cards{grid-template-columns:1fr} body{padding:24px 16px 80px} h1{font-size:24px} .label p{display:none}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
@@ -146,10 +152,60 @@ tfoot td{background:var(--surface2);font-weight:700;border-top:2px solid var(--b
 <div class="top"><div class="eyebrow">Audit bộ lọc trang Laptop · 10/11/2026</div><button class="theme-toggle" id="themeToggle" aria-label="Đổi giao diện sáng / tối" title="Đổi giao diện sáng / tối">◐</button></div>
 <h1>Công thức chọn chip — chạy thử cate Laptop</h1>
 <ul class="sub bl"><li>Dữ liệu: 85 chip đang có trên web</li><li>Chip "Học tập, văn phòng" tách thành Sinh viên + Văn phòng như bản tinh gọn, nên tính 86 giá trị</li><li>Lượt tìm theo file Ahrefs 75k</li><li>Không tính bộ lọc Hãng và Chọn theo dòng (luôn có)</li><li>Chia theo 12 bộ lọc của bản tinh gọn</li></ul>
-<nav class="toc" aria-label="Mục lục"><a href="#cong-thuc">1. Công thức</a><a href="#tong">2. Kết quả theo bộ lọc</a><a href="#chi-tiet">3. Chi tiết từng giá trị</a><a href="#khac">4. Khác bản chốt tay</a></nav>
+<nav class="toc" aria-label="Mục lục"><a href="#ly-do">1. Vì sao chọn công thức này</a><a href="#cong-thuc">2. Công thức</a><a href="#tong">3. Kết quả theo bộ lọc</a><a href="#chi-tiet">4. Chi tiết từng giá trị</a><a href="#khac">5. Khác bản chốt tay</a></nav>
+
+<section id="ly-do">
+<div class="label"><span class="n">1</span><h2>Vì sao chọn công thức này</h2></div>
+
+<h3 class="ld-h">Bối cảnh: vấn đề ban đầu</h3>
+<div class="cards">
+<div class="card"><h3>Có công nghệ mới là có order filter</h3><ul class="bl"><li>Mỗi khi có chip hoặc card mới, ngành hàng order thêm 1 filter</li><li>Ngành hàng nghĩ theo "có công nghệ mới thì có người cần lọc", không nghĩ theo lượt tìm</li><li>Ví dụ: đợt RTX 20/10 order cùng lúc 7 card</li></ul></div>
+<div class="card"><h3>Bộ lọc dày dần</h3><ul class="bl"><li>Trang Laptop đang có 85 chip</li><li>CPU 25 giá trị, RAM 10 giá trị</li><li>14 giá trị không có ai tìm (0 lượt/tháng) vẫn chiếm 1 chip</li></ul></div>
+<div class="card"><h3>Tải khai báo tăng theo</h3><ul class="bl"><li>Mỗi chip là 1 trang phải viết Title, Meta, Infobox</li><li>Không có luật chung nên mỗi order phải họp để quyết tạo hay không</li><li>Mỗi người quyết một kiểu, lần sau khó làm lại đúng như lần trước</li></ul></div>
+</div>
+
+<h3 class="ld-h">Đã thử những cách nào</h3>
+<div class="tw"><div class="ts"><table class="ld-t">
+<thead><tr><th>Cách tính mốc</th><th>Ra gì</th><th>Vì sao bỏ</th></tr></thead>
+<tbody>
+<tr><td class="attr">Trung bình hoặc trung vị trong từng bộ lọc</td><td>Mỗi bộ lọc 1 mốc riêng, do chính các giá trị trong bộ lọc đó quyết</td><td><ul class="bl"><li>Giá trị lớn kéo mốc lên: Nhu cầu bị Gaming kéo mốc lên 6.174, loại cả Laptop AI (2.600), Đồ hoạ (4.910)</li><li>Bộ lọc nhỏ giữ giá trị ít tìm: Ultra X9 (40 lượt) vẫn có chip</li><li>Thêm vài giá trị 0 lượt là mốc tụt: RAM thêm 6 giá trị 0 lượt thì mốc về 0, hiện cả 16 chip</li></ul></td></tr>
+<tr><td class="attr">Trung bình cả ngành hàng</td><td class="num">2.018 lượt, 20/86 đạt</td><td><ul class="bl"><li>Gaming một mình 60.080 lượt, bằng 35% tổng, kéo trung bình lên</li><li>RAM không giá trị nào đạt, CPU chỉ còn Core i5, i7</li></ul></td></tr>
+<tr><td class="attr">(Tổng − giá trị lớn nhất) ÷ số giá trị</td><td class="num">1.319 lượt, 24/86 đạt</td><td><ul class="bl"><li>Vẫn quá cao: CPU chỉ còn Core i5, i7, i9</li><li>Gần như cả CPU và RAM phải lấp suất bằng tay</li></ul></td></tr>
+<tr class="ld-pick"><td class="attr">Trung vị cả ngành hàng, tính 1 lần <span class="st st--ok">Đang chọn</span></td><td class="num">200 lượt, 43/86 đạt</td><td><ul class="bl"><li>Gaming tăng gấp 10 thì mốc vẫn 200</li><li>Dễ nói: được tìm ít nhất bằng giá trị đứng giữa của ngành hàng thì có chip riêng</li></ul></td></tr>
+</tbody></table></div></div>
+
+<h3 class="ld-h">Vì sao chọn công thức hiện tại</h3>
+<div class="cards">
+<div class="card card--ok"><h3>1 mốc chung, cố định 200</h3><ul class="bl"><li>Mọi giá trị ở mọi bộ lọc so với cùng 1 con số</li><li>Đạt hay không là chuyện của riêng giá trị đó, anh em trong bộ lọc không quyết thay</li><li>Tính 1 lần rồi khoá, thêm giá trị mới cũng không kéo mốc lên xuống</li></ul></div>
+<div class="card card--ok"><h3>5 suất mỗi bộ lọc</h3><ul class="bl"><li>Bộ lọc ≤ 5 giá trị giữ hết: không đụng 6/12 bộ lọc đang ổn</li><li>Bộ lọc lớn lấp cho đủ 5, chỉ bằng giá trị từ 50 lượt</li><li>Khoảng 2 hàng chip trên điện thoại</li></ul></div>
+<div class="card card--ok"><h3>Gộp chứ không bỏ</h3><ul class="bl"><li>Giá trị không có chip riêng vẫn nằm trong 1 chip chung</li><li>Máy nào cũng còn đường lọc, đúng nhu cầu của ngành hàng</li><li>Chip chung có tên dễ hiểu: dải số ("8 - 12 GB"), "Core Ultra X", "Ryzen AI"</li></ul></div>
+</div>
+
+<h3 class="ld-h">Giải quyết được gì</h3>
+<div class="tw"><div class="ts"><table class="ld-t">
+<thead><tr><th>Vấn đề</th><th>Mức giải</th><th>Bằng chứng</th></tr></thead>
+<tbody>
+<tr><td class="attr">Mỗi order phải họp mới quyết được</td><td><span class="badge badge--ok">Giải</span></td><td>Chỉ cần lượt tìm/tháng của giá trị, so với 200. Ai chạy cũng ra cùng kết quả: 64 chip</td></tr>
+<tr><td class="attr">Bộ lọc dày vì giá trị ít người tìm</td><td><span class="badge badge--ok">Giải</span></td><td>85 chip trên web còn 64 chip theo công thức. RAM 10 giá trị còn 5 chip, CPU 25 còn 16</td></tr>
+<tr><td class="attr">Tải khai báo</td><td><span class="badge badge--merge">Một phần</span></td><td>Order dưới mốc không sinh trang mới. Core 3, 5, 7, 9 thành 1 chip "Core phổ thông". Chip gộp mới vẫn phải khai báo 1 lần</td></tr>
+<tr><td class="attr">Máy công nghệ mới phải lọc được</td><td><span class="badge badge--merge">Một phần</span></td><td>Giá trị mới luôn vào 1 chip. Có chip tên riêng thì phải đủ 200 lượt</td></tr>
+<tr><td class="attr">Bộ lọc dày vì công nghệ mới nhiều người tìm</td><td><span class="badge badge--mid">Chưa giải</span></td><td>Công thức không có trần. Đủ cả các card RTX thì Dòng card đồ hoạ từ 4 lên 12 chip. Bản 2 cấp đưa chip mới vào khung xổ, màn hình đầu không dày thêm</td></tr>
+<tr><td class="attr">Nhiều người tìm nhưng ít máy</td><td><span class="badge badge--mid">Chưa giải</span></td><td>Công thức không nhìn số máy. RTX 5090 (670 lượt, 1 máy) vẫn có chip riêng</td></tr>
+</tbody></table></div></div>
+
+<h3 class="ld-h">Ví dụ chạy qua công thức</h3>
+<div class="cards ld-ex">
+<div class="card card--ok"><h3>Nhu cầu: Laptop AI</h3><ul class="bl"><li>Cách cũ: Gaming (60.080) kéo mốc của Nhu cầu lên 6.174</li><li>Laptop AI 2.600 lượt bị loại dù nhiều người tìm</li><li>Công thức: 2.600 ≥ 200 nên có chip riêng. Cả 8 nhu cầu đều giữ</li></ul></div>
+<div class="card card--ok"><h3>CPU: Ultra X9</h3><ul class="bl"><li>Cách cũ: 40 lượt mà vẫn có chip, vì nhóm chỉ 5 chip</li><li>Công thức: 40 &lt; 200, gộp cùng Ultra X7 (120 lượt) thành chip "Core Ultra X"</li><li>Máy Ultra X9 vẫn lọc được</li></ul></div>
+<div class="card card--ok"><h3>Order mới 0 lượt: Ryzen AI 400</h3><ul class="bl"><li>Lúc lên kệ: 0 lượt tìm, 6 máy</li><li>Dòng Ryzen AI không giá trị nào đạt 200, nên gộp cả dòng thành chip "Ryzen AI"</li><li>Không cần tạo trang mới. Khớp bản chốt tay</li></ul></div>
+<div class="card"><h3>Đợt RTX 20/10: 7 card</h3><ul class="bl"><li>Lượt tìm đợt 20/10: RTX 3050, 4050, 5050, 5060, 5090 đủ 200 thì có chip. RTX 5070 (100), 5080 (80) gộp vào "RTX 50 khác"</li><li>Khớp quyết định lúc đó 6/7. Lệch RTX 5090: lúc đó không tạo vì chỉ có 1 máy</li><li>Mỗi card có câu trả lời ngay, không cần họp</li></ul></div>
+<div class="card"><h3>Vì sao khoá mốc, không tính lại mỗi kỳ</h3><ul class="bl"><li>Nếu tính lại mỗi kỳ, thêm 4 giá trị 0 lượt là mốc xuống 180</li><li>Lúc đó RAM 24 GB mất chip dù lượt tìm của nó không đổi</li><li>Thêm 8 card RTX và 2 giá trị lớn là mốc lên 300, CPU từ 16 còn 11 chip</li><li>Khoá 200 thì giá trị chỉ đổi kết quả khi lượt tìm của chính nó đổi</li></ul></div>
+<div class="card card--note"><h3>Chỗ cần biết khi đọc kết quả</h3><ul class="bl"><li>Bộ lọc ≤ 5 giá trị giữ hết, nên MX Series 0 lượt vẫn có chip</li><li>Luật dòng làm giá trị cùng dòng phụ thuộc nhau: RTX 5090 ở 190 thay vì 200 thì RTX 5050, 5060 cũng mất chip riêng</li><li>Chip mới chưa có lượt tìm thì chưa có chip tên riêng</li></ul></div>
+</div>
+</section>
 
 <section id="cong-thuc">
-<div class="label"><span class="n">1</span><h2>Công thức</h2></div>
+<div class="label"><span class="n">2</span><h2>Công thức</h2></div>
 <div class="rule">
 <div class="step step--hero"><b>MỐC CHIP RIÊNG</b><div class="big">200 lượt tìm/tháng</div><ul><li>= trung vị lượt tìm của cả 86 giá trị trong ngành hàng, tính đúng 1 lần</li><li>Từ đó cố định 200, không tính lại mỗi kỳ</li><li>Giá trị chỉ đổi kết quả khi lượt tìm của chính nó đổi</li><li>Ngành hàng khác cũng tính trung vị 1 lần ra mốc riêng</li></ul></div>
 <div class="step"><b>BỘ LỌC ≤ 5 GIÁ TRỊ</b><ul><li>Giữ hết, không cần tính</li></ul><b style="margin-top:12px">BỘ LỌC &gt; 5 GIÁ TRỊ, XÉT LẦN LƯỢT</b><ul><li>Theo dòng: dòng quá nửa đạt mốc thì giữ các giá trị đạt mốc, không thì gộp cả dòng</li><li>Giá trị không thuộc dòng: đạt mốc → giữ riêng, được vượt 5</li><li>Chưa đủ 5 chip → lấp bằng giá trị lượt tìm cao nhất còn lại, từ 50 lượt</li><li>Còn lại → gộp vào chip chung</li></ul></div>
@@ -164,7 +220,7 @@ tfoot td{background:var(--surface2);font-weight:700;border-top:2px solid var(--b
 </section>
 
 <section id="tong">
-<div class="label"><span class="n">2</span><h2>Kết quả theo bộ lọc</h2><p><span class="chip">Xanh: chip giữ riêng</span><span class="chip chip--merge">Cam: chip chung sau khi gộp</span></p></div>
+<div class="label"><span class="n">3</span><h2>Kết quả theo bộ lọc</h2><p><span class="chip">Xanh: chip giữ riêng</span><span class="chip chip--merge">Cam: chip chung sau khi gộp</span></p></div>
 <div class="tw"><div class="ts"><table>
 <thead><tr><th>Bộ lọc và luật áp</th><th>Giá trị</th><th>Chip</th><th>Chốt tay</th><th>Chip giữ riêng</th><th>Chip chung (= gộp từ)</th></tr></thead>
 <tbody><tr><td class="attr">Khoảng giá<div class="pills"><span class="mini mini--base">Đ1 ×5</span></div></td>
@@ -197,7 +253,7 @@ tfoot td{background:var(--surface2);font-weight:700;border-top:2px solid var(--b
 </section>
 
 <section id="chi-tiet">
-<div class="label"><span class="n">3</span><h2>Chi tiết từng giá trị</h2></div>
+<div class="label"><span class="n">4</span><h2>Chi tiết từng giá trị</h2></div>
 <div class="filters" role="group" aria-label="Lọc bảng">
 <button data-f="all" aria-pressed="true">Tất cả</button><button data-f="giu" aria-pressed="false">Chỉ giá trị giữ riêng</button><button data-f="gop" aria-pressed="false">Chỉ giá trị bị gộp</button><button data-f="diff" aria-pressed="false">Chỉ chỗ khác bản chốt tay</button>
 </div>
@@ -381,7 +437,7 @@ tfoot td{background:var(--surface2);font-weight:700;border-top:2px solid var(--b
 </section>
 
 <section id="khac">
-<div class="label"><span class="n">4</span><h2>Khác bản chốt tay ở đâu</h2></div>
+<div class="label"><span class="n">5</span><h2>Khác bản chốt tay ở đâu</h2></div>
 <div class="tw"><div class="ts"><table>
 <thead><tr><th>Bộ lọc</th><th>Công thức</th><th>Chốt tay</th><th>Khác ở đâu</th><th>Xử lý</th></tr></thead>
 <tbody>
