@@ -1,15 +1,20 @@
-/* Demo bộ lọc 3 cấp trang /laptop, nhái đúng cách trang Hãng làm với dòng sản phẩm.
+/* Demo bộ lọc 2 cấp trang /laptop (bản tinh gọn 1 cấp dùng chung file này).
  *
- * Cách trang Hãng làm (đã đo trên laptop-asus và laptop-asus-vivobook):
- *  - Bấm một nút (Asus, VivoBook...) là CHUYỂN SANG TRANG RIÊNG của nút đó (địa chỉ mới, tải lại trang).
- *  - Trang đó: dòng 1 có nút Lọc, mỗi cấp đã chọn là một chip ("Asus ✕", "VivoBook ✕"), "Xóa tất cả".
- *    Dòng 2 là MỘT hàng nút trắng viền xám: nút con của trang đang đứng. Trang không có nút con
- *    (như VivoBook) thì hàng là các nút cùng cấp, nút đang đứng viền + chữ xanh.
- * Bộ lọc 3 cấp làm y vậy: RTX 50 series là một trang, trên đó hiện hàng RTX 5050, 5060, 5070...
- * Bảng "Tất cả bộ lọc" chỉ có nút cấp 1; chọn xong bấm Xem kết quả cũng chuyển sang trang mới.
+ * Bảng "Tất cả bộ lọc": giá trị có giá trị con thành chip ▾ (Intel ▾, Card rời ▾...). Bấm chip ▾ chỉ mở/gập
+ * khung ngay dưới hàng, không lọc, không có địa chỉ. Trong khung: mỗi dòng 1 nhóm, nhãn chữ xám đầu dòng;
+ * nhóm có trang riêng thì chip đầu dòng in đậm ("Tất cả card rời"). Chọn cha thì bỏ con cùng nhánh và ngược lại.
+ *
+ * Đổi trang khi bấm Xem / bấm chip ✕ / bấm hàng nút nhanh: theo đúng luật web thật đo ngày 11/11.
+ *  - Còn đúng 1 giá trị: sang trang của giá trị đó.
+ *  - Đúng 2 giá trị thuộc cặp có trang kết hợp (Hãng + giá trị, Hãng + Nhu cầu, Hãng + Khoảng giá,
+ *    giá trị + Khoảng giá, Nhu cầu + Khoảng giá): sang trang kết hợp.
+ *  - Còn lại (2 giá trị cùng bộ lọc, 2 giá trị thường, từ 3 giá trị, kéo thanh giá): không có trang,
+ *    ở lại trang đang đứng và thêm # vào địa chỉ. Trang đang đứng không còn trong lựa chọn thì về /laptop.
+ * Hàng nút nhanh trên trang (i3, i5, i7...) là đổi trang, không cộng thêm.
  * Nút hết máy tự ẩn. Thêm ?hien-nut-trong=1 vào địa chỉ để xem cả nút chưa có máy (hiện mờ).
  *
- * Địa chỉ trang: index.html?l=laptop-rtx-50-series (nhiều nút cách nhau dấu phẩy), &h=hãng, &gia=từ-đến (triệu).
+ * Địa chỉ demo: index.html?l=laptop-core-i5 (trang), phần sau # là lựa chọn không có trang.
+ * Thanh vàng đầu trang ghi địa chỉ kiểu web tương ứng (minh hoạ, tên trang mới tự đặt).
  * Tên lớp CSS là của chính web (Tailwind), chép từ trang thật, nên giao diện giống 100%.
  */
 (function () {
@@ -31,6 +36,8 @@
   const state = { sel: [], brands: [], pmin: PRICE_MIN, pmax: PRICE_MAX, sort: 'hot', priceDir: 'asc', shown: 20 };
   let pending = null;
   let popOpen = false;
+  let justOpened = null;                                    // chỉ chạy hiệu ứng mở 1 lần, không chạy lại mỗi lần vẽ lại
+  const openExp = {};                                       // bộ lọc -> chip ▾ đang mở
 
   const $ = (s, r) => (r || document).querySelector(s);
   const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -44,6 +51,18 @@
   const visKids = id => kids(id).filter(visible);
   const descendants = id => kids(id).flatMap(c => [c, ...descendants(c)]);
 
+  /* tên nhóm không có trang ("Nhóm") chỉ là chữ hoặc chip ▾ để mở; mọi giá trị có trang là chip bấm được. */
+  const isLabel = id => !(N[id].web || []).length;          // nhóm chưa có địa chỉ trên web hiện tại = chữ / chip mở; đang có địa chỉ = chip bấm được
+  const isGroupLabel = id => hasKids(id) && isLabel(id);    // chỉ áp cho nút có con; nút lá chưa có trên web (RTX 5060...) là chip mới, vẫn có trang
+  const ancestorsOf = id => { const a = []; for (let c = N[id].cha; c; c = N[c].cha) a.push(c); return a; };
+  function pick2(st, id) {                                   // chọn 1 chip trong khung: bỏ chip cha/con cùng nhánh để nghĩa luôn rõ
+    if (!N[id]) return;
+    if (st.sel.includes(id)) return toggleNode(st, id);
+    if (N[id].may.length === 0) return;
+    const drop = new Set([...ancestorsOf(id), ...descendants(id)]);
+    st.sel = st.sel.filter(x => !drop.has(x));
+    st.sel.push(id);
+  }
   function toggleNode(st, id) {
     if (!N[id]) return;
     if (N[id].may.length === 0 && !st.sel.includes(id)) return;
@@ -100,7 +119,7 @@
   const withAncestors = ids => { const S = new Set(); for (const id of ids) for (let c = id; c; c = N[c].cha) S.add(c); return [...S].sort((a, b) => POS[a] - POS[b]); };
   function urlFor(st) {
     const q = new URLSearchParams();
-    const deep = deepest(st.sel);
+    const deep = deepest(st.sel).filter(id => !isGroupLabel(id));   // tên nhóm không có trang (Intel, Core Ultra...) không bao giờ là giá trị đã chọn
     if (deep.length) q.set('l', deep.map(id => SLUG[id]).join(','));
     if (st.brands.length) q.set('h', st.brands.map(b => ascii(D.brands[b].ten)).join(','));
     if (priceActive(st)) q.set('gia', `${st.pmin / 1e6}-${st.pmax / 1e6}`);
@@ -108,6 +127,60 @@
     const s = q.toString().replace(/%2C/g, ',');
     return location.pathname + (s ? '?' + s : '');
   }
+  const EMPTY = () => ({ sel: [], brands: [], pmin: PRICE_MIN, pmax: PRICE_MAX });
+
+  /* ---------- có trang riêng hay chỉ thêm # (luật web thật, bấm thử ngày 11/11) ---------- */
+  // Mỗi giá trị đã chọn thuộc 1 loại: hãng, giá trị thường (chip), Nhu cầu (web gọi Loại sản phẩm, ?g=), Khoảng giá (?p=), kéo thanh giá.
+  const KIND_ORDER = ['hang', 'chip', 'loai', 'gia', 'keo'];
+  const kindOf = id => { const g = D.groups[N[id].nhom].ten; return g === 'Khoảng giá' ? 'gia' : g === 'Nhu cầu sử dụng' ? 'loai' : 'chip'; };
+  function picks(st) {                                       // các giá trị đang chọn: hãng trước, rồi giá trị theo thứ tự bộ lọc
+    const v = st.brands.map(b => ({ k: 'hang', key: 'h:' + b, b }));
+    for (const id of deepest(st.sel)) if (!isGroupLabel(id)) v.push({ k: kindOf(id), key: id, id });
+    if (priceActive(st)) v.push({ k: 'keo', key: 'keo' });
+    return v;
+  }
+  const COMBO = new Set(['hang+chip', 'hang+loai', 'hang+gia', 'chip+gia', 'loai+gia']);   // cặp có trang kết hợp trên web
+  function hasPage(st) {
+    const v = picks(st);
+    if (v.length <= 1) return !v.length || v[0].k !== 'keo';
+    if (v.length > 2) return false;
+    const [a, b] = v.map(x => x.k).sort((x, y) => KIND_ORDER.indexOf(x) - KIND_ORDER.indexOf(y));
+    return COMBO.has(a + '+' + b);
+  }
+  const BRAND_SLUG = D.brands.map((b, i) => (D.quick.find(q => q.kieu === 'hang' && q.hang === i) || {}).ten || ascii(b.ten));
+  const LOAI_SLUG = { 'Gaming': 'laptop-gaming', 'Văn phòng': 'hoc-tap-van-phong' };
+  function webAddr(st) {                                     // địa chỉ kiểu web để đối chiếu (minh hoạ); null = không có trang
+    if (!hasPage(st)) return null;
+    let path = '/laptop';
+    const q = [];
+    for (const x of picks(st)) {
+      if (x.k === 'hang') path += '-' + BRAND_SLUG[x.b];
+      else if (x.k === 'chip') path += SLUG[x.id].slice('laptop'.length);
+      else if (x.k === 'loai') q.push('g=' + (LOAI_SLUG[N[x.id].ten] || ascii(N[x.id].ten)));
+      else if (x.k === 'gia') q.push('p=' + ascii(N[x.id].ten));
+    }
+    return path + (q.length ? '?' + q.join('&') : '');
+  }
+  let pageSt = null;                                         // trang đang đứng = phần trước dấu # của địa chỉ
+  function hashBase(st) {                                    // không có trang: ở lại trang đang đứng nếu nó vẫn nằm trong lựa chọn, không thì về /laptop
+    const have = new Set(picks(st).map(x => x.key));
+    return picks(pageSt).every(x => have.has(x.key)) ? pageSt : EMPTY();
+  }
+  const navUrl = st => hasPage(st) ? urlFor(st) : urlFor(hashBase(st)) + '#' + (urlFor(st).split('?')[1] || '');
+  const baseAddr = st => webAddr(st) || '/laptop';
+  function destText(st) {                                    // dòng nhỏ ở chân bảng Lọc: bấm Xem sẽ đi đâu
+    const w = webAddr(st);
+    return w ? `Bấm Xem: sang trang <code>${esc(w)}</code>` : `Bấm Xem: không có trang riêng, ở lại <code>${esc(baseAddr(hashBase(st)))}</code> và thêm #`;
+  }
+  function renderPageInfo() {                                // thanh vàng đầu trang: trang này trên web là địa chỉ nào
+    const el = $('#demo-pageinfo');
+    if (!el) return;
+    const w = webAddr(state);
+    el.innerHTML = w
+      ? `Trên web: <code>${esc(w)}</code> <b class="demo-pi-ok">có trang riêng</b>`
+      : `Trên web: <code>${esc(baseAddr(pageSt))}#…</code> <b class="demo-pi-no">không có trang riêng</b> Chọn nhiều nên địa chỉ chỉ thêm #, tiêu đề vẫn là của trang ${esc(baseAddr(pageSt))}. Google bỏ qua phần sau #.`;
+  }
+
   const cloneSt = () => ({ sel: [...state.sel], brands: [...state.brands], pmin: state.pmin, pmax: state.pmax });
   function removeNode(st, id) {                              // bỏ nút và mọi nút con của nó
     const drop = new Set([id, ...descendants(id)]);
@@ -124,6 +197,12 @@
   }
   /* Hàng nút dưới thanh lọc: với mỗi nhánh đang đứng, nếu nút sâu nhất có nút con thì hàng là nút con của nó,
      nếu không thì hàng là các nút cùng cấp của nó (nút đang đứng viền xanh), y như trang dòng sản phẩm của Hãng. */
+  function rowOwners2(st) {                                  // chọn nhiều chip khác dòng thì không hiện hàng nút nhanh
+    const deep = deepest(st.sel);
+    if (deep.length <= 1) return rowOwners(st).slice(0, 1);
+    const p = N[deep[0]].cha;
+    return p && deep.every(x => N[x].cha === p) && !deep.some(x => visKids(x).length) ? [p] : [];
+  }
   function rowOwners(st) {
     const owners = [];
     for (const d of deepest(st.sel)) {
@@ -161,11 +240,12 @@
     return '';
   }
   function mountNoteBar() {
-    const ban = D.ban === 'tinh-gon' ? 'Demo bản tinh gọn bộ lọc hiện có (1 cấp)' : 'Demo bản 3 cấp';
+    const ban = D.ban === 'tinh-gon' ? 'Demo bản tinh gọn bộ lọc hiện có (1 cấp)' : 'Demo bản 2 cấp (bấm Lọc, chip có dấu ▾ như Intel ▾ thì bấm để mở khung bên dưới)';
     const link = D.so_sanh ? `<a href="${esc(D.so_sanh)}">So sánh với bộ lọc hiện tại →</a>` : '';
     document.body.insertAdjacentHTML('afterbegin', `<div id="demo-notebar"><b>${ban}</b>
       <span class="demo-leg">So với bộ lọc hiện tại trên web: ${tagHtml({ k: 'gop', tag: 'Gộp' })} nhiều nút thành 1 ${tagHtml({ k: 'tach', tag: 'Tách' })} 1 nút thành nhiều ${tagHtml({ k: 'doi', tag: 'Đổi tên' })} ${tagHtml({ k: 'moi', tag: 'Mới' })} nút thêm mới. Nhãn nhỏ mờ ở góc nút, rê chuột vào nút để đọc chi tiết. Nút không có nhãn là giữ nguyên.</span>
-      <label><input type="checkbox" id="demo-notetoggle" checked> Hiện ghi chú</label>${link}</div>`);
+      <label><input type="checkbox" id="demo-notetoggle" checked> Hiện ghi chú</label>${link}
+      <div id="demo-pageinfo"></div></div>`);
     $('#demo-notetoggle').addEventListener('change', e => document.body.classList.toggle('demo-hide-notes', !e.target.checked));
   }
 
@@ -199,17 +279,17 @@
       const chip = (label, href) => `<a class="  !bg-gray-0 !text-black-7 !text-13 rounded-8px shrink-0 px-3 py-2 cursor-pointer" href="${esc(href)}">${esc(label)} ✕</a>`;
       const rest = () => ({ sel: [...st.sel], brands: [...st.brands], pmin: st.pmin, pmax: st.pmax });
       h += '<div class="flex-wrap gap-10px flex items-center">';
-      st.brands.forEach(b => { const s = rest(); s.brands = s.brands.filter(x => x !== b); h += chip(D.brands[b].ten, urlFor(s)); });
-      if (priceActive(st)) { const s = rest(); s.pmin = PRICE_MIN; s.pmax = PRICE_MAX; h += chip(`${money(st.pmin)} - ${money(st.pmax)}`, urlFor(s)); }
-      for (const id of st.sel) h += chip(N[id].ten, urlFor(removeNode(rest(), id)));      // bỏ chip nào thì bỏ cả nhánh con của nó
-      h += `<a class="text-13 text-blue-5 shrink-0 cursor-pointer" href="${esc(urlFor({ sel: [], brands: [], pmin: PRICE_MIN, pmax: PRICE_MAX }))}">Xóa tất cả</a></div>`;
+      st.brands.forEach(b => { const s = rest(); s.brands = s.brands.filter(x => x !== b); h += chip(D.brands[b].ten, navUrl(s)); });
+      if (priceActive(st)) { const s = rest(); s.pmin = PRICE_MIN; s.pmax = PRICE_MAX; h += chip(`${money(st.pmin)} - ${money(st.pmax)}`, navUrl(s)); }
+      for (const id of deepest(st.sel)) { const s = rest(); s.sel = deepest(st.sel).filter(x => x !== id); h += chip(N[id].ten, navUrl(s)); }   // chỉ hiện chip thật, không hiện tên nhóm
+      h += `<a class="text-13 text-blue-5 shrink-0 cursor-pointer" href="${esc(urlFor(EMPTY()))}">Xóa tất cả</a></div>`;
     }
     h += '</div>';
     // một hàng nút cho mỗi nhánh đang đứng, y như hàng dòng sản phẩm của trang Hãng
-    for (const owner of rowOwners(st)) {
+    for (const owner of rowOwners2(st)) {
       h += '<div class="w-full flex-wrap gap-10px no-scrollbar flex pt-2">' + visKids(owner).map(c => {
         const on = S.has(c);
-        const href = N[c].may.length ? ` href="${esc(urlFor(stateAfterClick(c)))}"` : '';
+        const href = N[c].may.length ? ` href="${esc(navUrl(stateAfterClick(c)))}"` : '';
         return `<a class="${(on ? ROW_ON : ROW_CLS) + noteAttr(c).cls}"${href}${faded(c)}>${nutLabel(c)}${noteAttr(c).inner}</a>`;
       }).join('') + '</div>';
     }
@@ -219,17 +299,52 @@
 
   /* ---------- bảng "Tất cả bộ lọc" (chỉ nút cấp 1) ---------- */
   const NHU_CAU_ANH = { 'laptop-ai': 'Laptop AI', 'gaming': 'Gaming', 'văn-phòng': 'Học tập, văn phòng', 'sinh-viên': 'Học tập, văn phòng', 'đồ-hoạ': 'Đồ hoạ', 'kỹ-thuật': 'Kỹ thuật', 'mỏng-nhẹ': 'Mỏng nhẹ', 'cao-cấp': 'Cao cấp' };
-  function valueBtn(id, on, withImg) {
+  function valueBtn(id, on, withImg, label, extraCls) {
     const src = withImg ? D.anhNhuCau[NHU_CAU_ANH[id.split('/').pop()]] : '';
     const img = src ? `<div class="w-full h-auto overflow-hidden relative" style="height: 40px; width: 40px;"><img width="40" height="40" alt="" loading="lazy" class="object-contain" src="${esc(src)}" style="width: 40px; height: 40px;"></div>` : '';
-    return `<a class="${(on ? VALUE_ON : VALUE_CLS) + noteAttr(id).cls}" data-pnode="${esc(id)}"${faded(id)}>${img}${nutLabel(id)}${noteAttr(id).inner}</a>`;
+    return `<a class="${(on ? VALUE_ON : VALUE_CLS) + noteAttr(id).cls + (extraCls || '')}" data-pnode="${esc(id)}"${faded(id)}>${img}${label ? `<span>${esc(label)}</span>` : nutLabel(id)}${noteAttr(id).inner}</a>`;
   }
-  function groupChips(g, S) {                                 // các nút cấp 1 của một bộ lọc, hiện hết ra ngoài
-    return g.nut.filter(visible).map(id => valueBtn(id, S.has(id), g.ten === 'Nhu cầu sử dụng')).join('');
+  function groupChips(g, S) {                                 // nút có con thành chip ▾, bấm mở khung ngay dưới hàng
+    const ids = g.nut.filter(visible);
+    let out = '';
+    for (const id of ids) {
+      if (!hasKids(id)) { out += valueBtn(id, S.has(id), g.ten === 'Nhu cầu sử dụng'); continue; }
+      const only = visKids(id);                                // chip ▾ chỉ còn 1 chip con có máy: hiện thẳng chip con, khỏi phải mở
+      if (isLabel(id) && only.length === 1 && !hasKids(only[0])) { out += valueBtn(only[0], S.has(only[0]), false); continue; }
+      const picked = [id, ...descendants(id)].filter(x => S.has(x)).length;
+      const open = openExp[g.id] === id;
+      out += `<a class="${picked ? VALUE_ON : VALUE_CLS} demo-exp${open ? ' is-open' : ''}" data-pexp="${esc(g.id)}|${esc(id)}" title="Bấm để ${open ? 'gập' : 'mở'} các lựa chọn ${esc(N[id].ten)}"><span>${esc(N[id].ten)}${picked ? ` (${picked})` : ''}</span><span class="demo-chev">▾</span></a>`;
+    }
+    const o = openExp[g.id];
+    if (o && ids.includes(o)) out += expPanel(o, S);
+    return out;
+  }
+  function expPanel(id, S) {                                 // khung xổ: mỗi dòng 1 nhóm, nhãn chữ xám đầu dòng; chip đầu dòng nếu nhóm có trang riêng
+    const btn = (x, label, cls) => valueBtn(x, S.has(x), false, label, cls);
+    const shown = c => kids(c).filter(x => visible(x) || S.has(x));
+    const line = (lab, chips) => `<div class="demo-line"><span class="demo-lab">${lab ? esc(lab) : ''}</span><div class="demo-chips">${chips}</div></div>`;
+    const lines = [];
+    let hasLab = false;
+    if (!isLabel(id)) lines.push(line('', btn(id, 'Tất cả ' + N[id].ten.toLowerCase(), ' demo-head')));
+    const leaves = [];
+    for (const c of shown(id)) {
+      if (!hasKids(c)) { leaves.push(c); continue; }
+      if (isLabel(c)) { hasLab = true; lines.push(line(N[c].ten, shown(c).map(x => btn(x)).join(''))); }
+      else lines.push(line('', btn(c, '', ' demo-head') + shown(c).map(x => btn(x)).join('')));
+    }
+    if (leaves.length) lines.push(line('', leaves.map(x => btn(x)).join('')));
+    const anim = justOpened === id ? ' is-opening' : '';
+    return `<div class="demo-panel${hasLab ? '' : ' no-lab'}${anim}">${lines.join('')}</div>`;
+  }
+  function pickedRow(st) {                                   // hàng "Đã chọn" đầu bảng Lọc như web thật: chip ▾ gập lại vẫn thấy đã chọn gì
+    const ids = deepest(st.sel);
+    if (!ids.length) return '';
+    return '<div><p class="text-16 font-700 my-2">Đã chọn</p><div class="gap-10px flex flex-wrap items-center">' +
+      ids.map(id => `<a class="${VALUE_ON}" data-pnode="${esc(id)}" title="Bỏ chọn">${esc(N[id].ten)} ✕</a>`).join('') + '</div></div>';
   }
   function popupBody(st) {
     const S = new Set(st.sel);
-    let h = '<div class="gap-8px flex flex-col"><div><p class="text-16 font-700 my-2">Thương hiệu</p><div class="gap-10px grid grid-cols-4 md:grid-cols-6">' +
+    let h = '<div class="gap-8px flex flex-col">' + pickedRow(st) + '<div><p class="text-16 font-700 my-2">Thương hiệu</p><div class="gap-10px grid grid-cols-4 md:grid-cols-6">' +
       D.brands.map((b, i) => `<a class="${st.brands.includes(i) ? '!border-blue-5' : '!border-gray-1'} !text-black-7  h-40px flex items-center justify-center overflow-hidden rounded-8px border !bg-white p-1" data-pbrand="${i}"><div class="w-full h-auto overflow-hidden relative !w-full flex items-center justify-center" style="height: 30px; width: 100%;"><img height="30" alt="${esc(b.ten)}" class="!w-full object-contain" src="${esc(b.logo)}" style="width: 100%; height: 30px;"></div></a>`).join('') + '</div></div>';
     D.groups.forEach(g => {
       h += `<div><p class="text-16 font-700 my-2">${esc(g.ten)}${groupNote(g)}</p><div class="gap-10px flex flex-wrap items-center">` + groupChips(g, S) + '</div>';
@@ -251,7 +366,7 @@
   }
   function popupFoot() {
     const n = filterIdx(pending).length;
-    return `<a class="!text-red-5 !border-red-5 p-10px rounded-8px w-160px border !bg-white !text-center cursor-pointer" id="demo-reset"><span>Bỏ chọn</span></a>` +
+    return `<span class="demo-dest">${destText(pending)}</span><a class="!text-red-5 !border-red-5 p-10px rounded-8px w-160px border !bg-white !text-center cursor-pointer" id="demo-reset"><span>Bỏ chọn</span></a>` +
       `<button class="relative overflow-hidden rounded-lg bg-blue-5 px-3 py-2 text-white transition-all duration-300 !text-16 font-600 !p-10px min-w-160px shrink-0" id="demo-ok">Xem ${n} kết quả</button>`;
   }
   function mountPopup() {
@@ -272,9 +387,21 @@
     body.scrollTop = top;
     $('#demo-pfoot').innerHTML = popupFoot();
   }
-  function openPopup() { pending = JSON.parse(JSON.stringify(state)); popOpen = true; renderBar(); }
+  function openPopup() {
+    pending = JSON.parse(JSON.stringify(state));
+    pending.sel = deepest(pending.sel);                       // chỉ giữ chip thật đang chọn, bỏ tên nhóm
+    const seen = new Set();
+    for (const id of pending.sel) {                           // mở sẵn khung chứa chip đang chọn; mỗi bộ lọc 1 khung, lấy lựa chọn đầu tiên
+      const top = [id, ...ancestorsOf(id)].pop(), gid = D.groups[N[top].nhom].id;
+      if ((top !== id || hasKids(id)) && !seen.has(gid)) { openExp[gid] = top; seen.add(gid); }
+    }
+    popOpen = true; renderBar();
+  }
   function closePopup(apply) {
-    if (apply && pending) { location.href = urlFor(pending); return; }   // Xem kết quả: chuyển sang trang mới như web thật
+    if (apply && pending) {                                   // Xem kết quả: có trang thì sang trang, không thì thêm # (luật ở đầu file)
+      const url = navUrl(pending);
+      if (url !== location.pathname + location.search + location.hash) { location.href = url; return; }
+    }
     popOpen = false; pending = null;
     renderBar();
   }
@@ -304,9 +431,9 @@
     const idx = sortIdx(filterIdx(state));
     const grid = $('#demo-grid');
     const crumb = $('#demo-breadcrumb');
-    if (crumb) {                                              // "88 Laptop Asus" như trang Hãng khi chỉ đứng ở một nút
-      const deep = deepest(state.sel);
-      crumb.textContent = idx.length + ' Laptop' + (deep.length === 1 && !state.brands.length && !priceActive(state) ? ' ' + N[deep[0]].ten : '');
+    if (crumb) {                                              // "26 Laptop Asus" khi đứng ở trang riêng; chọn nhiều không có trang thì chỉ "78 Laptop" như web
+      const name = !hasPage(state) ? '' : picks(state).map(x => x.k === 'hang' ? D.brands[x.b].ten : N[x.id].ten).join(' ');
+      crumb.textContent = idx.length + ' Laptop' + (name ? ' ' + name : '');
     }
     grid.innerHTML = idx.length ? idx.slice(0, state.shown).map(cardHtml).join('')
       : '<div id="demo-empty">Không có laptop nào phù hợp với bộ lọc này.</div>';
@@ -335,7 +462,7 @@
   document.addEventListener('click', e => {
     // Nút trong hàng nút, chip, hàng nhanh đều là link thật (href) nên trình duyệt tự chuyển sang trang mới.
     // Ở đây chỉ xử lý những thứ nằm trong trang: mở/đóng bảng Lọc, chọn trong bảng, Xem thêm.
-    const t = e.target.closest('[id^=demo-],[data-pnode],[data-pbrand]');
+    const t = e.target.closest('[id^=demo-],[data-pnode],[data-pbrand],[data-pexp]');
     if (!t) return;
     const d = t.dataset;
     if (t.id === 'demo-lockbtn') return popOpen ? closePopup(false) : openPopup();
@@ -343,7 +470,8 @@
     if (t.id === 'demo-ok') return closePopup(true);
     if (t.id === 'demo-reset') { Object.assign(pending, { sel: [], brands: [], pmin: PRICE_MIN, pmax: PRICE_MAX }); return mountPopup(); }
     if (t.id === 'demo-more') { state.shown += 20; return renderGrid(); }
-    if (d.pnode) { toggleNode(pending, d.pnode); return mountPopup(); }
+    if (d.pexp) { const [gid, id] = d.pexp.split('|'); openExp[gid] = openExp[gid] === id ? null : id; justOpened = openExp[gid]; mountPopup(); justOpened = null; return; }
+    if (d.pnode) { pick2(pending, d.pnode); return mountPopup(); }
     if (d.pbrand != null && d.pbrand !== '') {
       const b = Number(d.pbrand), i = pending.brands.indexOf(b);
       i >= 0 ? pending.brands.splice(i, 1) : pending.brands.push(b);
@@ -363,17 +491,23 @@
   });
 
   /* ---------- đọc trang đang đứng từ địa chỉ ---------- */
-  function loadQuery() {
-    const q = new URLSearchParams(location.search);
-    const ids = (q.get('l') || '').split(',').map(s => BY_SLUG[s]).filter(Boolean);
-    state.sel = withAncestors(ids);
+  function parseSt(qs) {
+    const q = new URLSearchParams(qs);
+    const st = EMPTY();
+    st.sel = withAncestors((q.get('l') || '').split(',').map(s => BY_SLUG[s]).filter(Boolean));
     const hang = (q.get('h') || '').split(',').filter(Boolean);
-    state.brands = D.brands.map((b, i) => hang.includes(ascii(b.ten)) ? i : -1).filter(i => i >= 0);
+    st.brands = D.brands.map((b, i) => hang.includes(ascii(b.ten)) ? i : -1).filter(i => i >= 0);
     const g = (q.get('gia') || '').match(/^([\d.]+)-([\d.]+)$/);
-    if (g) { state.pmin = Math.max(PRICE_MIN, Number(g[1]) * 1e6); state.pmax = Math.min(PRICE_MAX, Number(g[2]) * 1e6); }
+    if (g) { st.pmin = Math.max(PRICE_MIN, Number(g[1]) * 1e6); st.pmax = Math.min(PRICE_MAX, Number(g[2]) * 1e6); }
+    return st;
+  }
+  function loadQuery() {                                      // trang = phần trước #; có # thì lựa chọn lấy từ phần sau #
+    pageSt = parseSt(location.search);
+    Object.assign(state, location.hash.length > 1 ? parseSt(location.hash.slice(1)) : parseSt(location.search));
   }
 
-  function renderAll() { renderBar(); renderGrid(); }
+  function renderAll() { renderPageInfo(); renderBar(); renderGrid(); }
+  window.addEventListener('hashchange', () => { popOpen = false; pending = null; state.shown = 20; loadQuery(); renderAll(); });
 
   loadQuery();
   setupSort();
