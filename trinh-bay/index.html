@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Bộ lọc Laptop 3 bản</title>
+<style>
+:root { --ink:#101828; --mut:#667085; --line:#e4e7ec; --bg:#eef0f3; --card:#fff; --tim:#6d28d9;
+  --gop:#f59e0b; --gop-bg:#fff3e0; --moi:#12b76a; --moi-bg:#ecfdf3; --an:#c4c8cf; --an-bg:#f2f4f7; }
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; background: var(--bg); color: var(--ink); font: 15px/1.45 Inter, system-ui, -apple-system, "Segoe UI", sans-serif; }
+body { display: flex; flex-direction: column; overflow: hidden; }
+.top { display: flex; align-items: center; gap: 12px 20px; flex-wrap: wrap; padding: 10px 16px; background: #fff; border-bottom: 1px solid var(--line); }
+.top h1 { font-size: 18px; margin: 0; }
+.leg { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; font-size: 13.5px; color: #344054; }
+.sw { display: inline-block; width: 22px; height: 14px; border-radius: 4px; border: 1.5px solid #d0d5dd; background: #fff; vertical-align: -2px; margin-right: 5px; }
+.sw.gop { background: var(--gop-bg); border-color: var(--gop); } .sw.moi { background: var(--moi-bg); border-color: var(--moi); }
+.sw.an { background: var(--an-bg); border-color: var(--an); border-style: dashed; }
+.top .sp { flex: 1; }
+.btn { font: 600 14px Inter, system-ui, sans-serif; border: 1px solid #d0d5dd; background: #fff; color: var(--ink); border-radius: 8px; padding: 7px 14px; cursor: pointer; white-space: nowrap; }
+.btn:hover { background: #f9fafb; } .btn.on { background: var(--ink); color: #fff; border-color: var(--ink); }
+.hint { font-size: 13px; color: var(--mut); }
+.cols { flex: 1; min-height: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; padding: 10px; }
+.col { display: flex; flex-direction: column; min-width: 0; min-height: 0; background: var(--card); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+.head { padding: 6px 10px 6px 14px; border-bottom: 1px solid var(--line); display: flex; align-items: center; gap: 4px 14px; flex-wrap: wrap; }
+.head h2 { margin: 0; font-size: 17px; white-space: nowrap; }
+.stats { display: contents; }
+.stat { white-space: nowrap; font-size: 13px; color: var(--mut); }
+.stat b { font-size: 16px; color: var(--ink); margin-right: 4px; }
+.how { font-size: 13px; color: #344054; white-space: nowrap; }
+.head .b-full { margin-left: auto; padding: 4px 12px; font-size: 13px; }
+.how::before { content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #12b76a; margin-right: 7px; vertical-align: 1px; }
+.col[data-ban="2-cap"] .how::before { background: #f79009; }
+.col[data-ban="hien-tai"] .how::before { background: #98a2b3; }
+.frame { position: relative; flex: 1; min-height: 0; overflow: hidden; background: #fff; }
+.frame iframe { position: absolute; left: 0; top: 0; border: 0; width: 1200px; transform-origin: 0 0; background: #fff; }
+body.full .cols { grid-template-columns: 1fr; }
+body.full .col:not(.big) { display: none; }
+.drawer { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; max-height: 78vh; overflow: auto; background: #fff; border-top: 1px solid var(--line);
+  box-shadow: 0 -10px 30px rgba(16,24,40,.18); transform: translateY(105%); transition: transform .2s ease; padding: 16px 20px 22px; }
+.drawer.open { transform: none; }
+.drawer .dh { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 10px; }
+.drawer h3 { margin: 0; font-size: 18px; }
+.pill { display: inline-block; background: #f4ebff; color: #53389e; font-weight: 600; border-radius: 999px; padding: 4px 12px; font-size: 14px; }
+table { border-collapse: collapse; width: 100%; font-size: 15px; }
+th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-size: 12.5px; color: var(--mut); font-weight: 600; text-transform: uppercase; letter-spacing: .02em; }
+td.ma { font-weight: 800; white-space: nowrap; width: 54px; }
+tr.nh td { background: #f9fafb; font-weight: 700; color: #344054; font-size: 13px; padding: 5px 10px; }
+td.vd { color: #344054; }
+@media (prefers-reduced-motion: reduce) { .drawer { transition: none; } }
+@media (max-width: 900px) { body { overflow: auto; } .cols { grid-template-columns: 1fr; } .col { height: 85vh; } }
+</style></head>
+<body>
+<div class="top">
+  <h1>Bộ lọc trang Laptop: 3 bản</h1>
+  <div class="leg"><span><i class="sw"></i>Giữ</span><span><i class="sw gop"></i>Gộp</span><span><i class="sw moi"></i>Mới hoặc tách</span><span><i class="sw an"></i>Ẩn</span></div>
+  <span class="hint">Mỗi cột cuộn riêng. Bấm tên bộ lọc hay chip thì 3 cột cùng cuộn tới chỗ đó.</span>
+  <span class="sp"></span>
+  <button class="btn" id="b-luat">Xem rule</button>
+  <button class="btn on" id="b-ghi">Ghi chú: bật</button>
+</div>
+<div class="cols" id="cols"></div>
+<div class="drawer" id="drawer" aria-hidden="true">
+  <div class="dh"><h3>Rule chọn chip</h3><span class="pill">Mốc 200 lượt tìm mỗi tháng, cố định</span><span class="pill">5 chip mỗi bộ lọc</span><span class="sp" style="flex:1"></span><button class="btn" id="b-dong">Đóng</button></div>
+  <table><thead><tr><th>Mã</th><th>Khi nào</th><th>Thành gì</th><th>Ví dụ</th></tr></thead><tbody id="luat"></tbody></table>
+</div>
+<script>
+const CFG = {"ban": [{"id": "hien-tai", "ten": "Hiện tại", "cau": "Đang chạy trên web", "bo_loc": 15, "dau": 85, "khung": 0}, {"id": "tinh-gon", "ten": "Tinh gọn", "cau": "Làm ngay, IT không phải code", "bo_loc": 12, "dau": 62, "khung": 0}, {"id": "2-cap", "ten": "2 cấp", "cau": "Cần IT làm khung xổ ▾", "bo_loc": 11, "dau": 49, "khung": 46}], "luat": [{"nhom": "Giữ chip riêng"}, {"ma": "G1", "khi": "Bộ lọc có từ 5 lựa chọn trở xuống", "thanh": "Hiện hết", "vd": ["Khoảng giá", "Kích thước màn hình"]}, {"ma": "G2", "khi": "Từ 200 lượt tìm", "thanh": "Có chip riêng", "vd": ["Gaming", "Core Ultra 5", "16 GB"]}, {"ma": "G3", "khi": "Bộ lọc chưa đủ 5 chip", "thanh": "Thêm lựa chọn nhiều người tìm nhất, từ 50 lượt", "vd": ["24 GB", "SSD 256 GB", "144 Hz"]}, {"ma": "G4", "khi": "Phần gộp chỉ còn 1 lựa chọn", "thanh": "Giữ đúng tên nó", "vd": ["Ryzen 3", "Có bàn phím số"]}, {"nhom": "Gộp chip"}, {"ma": "P1", "khi": "Số đo ít người tìm", "thanh": "Gộp với chip kề thành dải", "vd": ["8 - 12 GB", "90 - 120 Hz"]}, {"ma": "P2", "khi": "Nhiều số đo ít người tìm ở đầu hoặc cuối thang", "thanh": "1 chip \"Từ X\"", "vd": ["Từ 36 GB", "SSD từ 2 TB", "Từ 165 Hz"]}, {"ma": "P3", "khi": "Cùng dòng chip, chưa quá nửa đủ 200 lượt", "thanh": "Gộp cả dòng thành 1 chip", "vd": ["Core Ultra X", "Core phổ thông", "Ryzen AI"]}, {"ma": "P4", "khi": "Cùng loại", "thanh": "Gộp chung 1 chip", "vd": ["HD → Full HD", "Retina → 2K - 3K"]}, {"nhom": "Khác"}, {"ma": "M", "khi": "Có máy chưa chip nào lọc được", "thanh": "Thêm chip mới", "vd": ["Dưới 90 Hz"]}, {"ma": "Ẩn", "khi": "Hết máy", "thanh": "Web tự ẩn chip", "vd": ["MX Series"]}, {"ma": "X", "khi": "Chỉ bản 2 cấp: nhiều chip cùng hãng hoặc cùng loại", "thanh": "Gom vào 1 chip ▾, bấm mới mở", "vd": ["Intel ▾", "AMD ▾", "Qualcomm ▾"]}]};
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const cols = document.getElementById('cols');
+cols.innerHTML = CFG.ban.map(b => `<section class="col" data-ban="${b.id}">
+  <div class="head"><h2>${esc(b.ten)}</h2>
+    <div class="stats"><span class="stat"><b>${b.bo_loc}</b>bộ lọc</span><span class="stat"><b>${b.dau}</b>chip đầu</span>${b.khung ? `<span class="stat"><b>${b.khung}</b>trong khung ▾</span>` : ''}</div>
+    <span class="how">${esc(b.cau)}</span><button class="btn b-full">Phóng to</button></div>
+  <div class="frame"><iframe src="cot-${b.id}.html" title="Trang Laptop bản ${esc(b.ten)}"></iframe></div></section>`).join('');
+document.getElementById('luat').innerHTML = CFG.luat.map(r => r.nhom
+  ? `<tr class="nh"><td colspan="4">${esc(r.nhom)}</td></tr>`
+  : `<tr><td class="ma">${esc(r.ma)}</td><td>${esc(r.khi)}</td><td>${esc(r.thanh)}</td><td class="vd">${esc(r.vd.join(', '))}</td></tr>`).join('');
+
+const frames = [...document.querySelectorAll('.col iframe')];
+let notesOn = true;
+const send = (f, m) => f.contentWindow && f.contentWindow.postMessage(Object.assign({ tb: 1 }, m), '*');
+const rong = new Map();                               // bề ngang mỗi cột cần hiện: tới mép phải bảng Lọc (cột tự báo)
+function layout() {                                   // phóng phần bảng Lọc cho vừa bề ngang cột; phần lưới máy bên phải bị cắt
+  const full = document.body.classList.contains('full');
+  for (const f of frames) {
+    const box = f.parentElement, w = box.clientWidth, h = box.clientHeight;
+    if (!w) continue;
+    const W0 = rong.get(f) || 960;
+    const s = full ? Math.min(w / W0, 1.6) : w / W0;
+    f.style.width = W0 + 'px';                         // khung chỉ rộng tới mép bảng Lọc, không lộ lưới máy phía sau
+    f.style.left = (full ? Math.max(0, (w - W0 * s) / 2) : 0) + 'px';
+    f.style.transform = `scale(${s})`;
+    f.style.height = Math.ceil(h / s) + 'px';
+    send(f, { type: 'k', k: Math.min(2.6, Math.max(1, 1 / s)).toFixed(3) });
+  }
+}
+addEventListener('resize', layout);
+addEventListener('message', e => {
+  const m = e.data; if (!m || !m.tb) return;
+  const src = frames.find(f => f.contentWindow === e.source); if (!src) return;
+  if (m.type === 'san-sang') { layout(); send(src, { type: 'ghi-chu', on: notesOn }); return; }
+  if (['chon', 'nhom', 'bo'].includes(m.type)) frames.forEach(f => send(f, m));
+  else if (m.type === 'rong' && rong.get(src) !== m.w) { rong.set(src, m.w); layout(); }
+});
+const bGhi = document.getElementById('b-ghi');
+bGhi.onclick = () => {
+  notesOn = !notesOn;
+  bGhi.classList.toggle('on', notesOn); bGhi.textContent = notesOn ? 'Ghi chú: bật' : 'Ghi chú: tắt';
+  frames.forEach(f => send(f, { type: 'ghi-chu', on: notesOn }));
+};
+const drawer = document.getElementById('drawer');
+const setDrawer = o => { drawer.classList.toggle('open', o); drawer.setAttribute('aria-hidden', String(!o)); };
+document.getElementById('b-luat').onclick = () => setDrawer(!drawer.classList.contains('open'));
+document.getElementById('b-dong').onclick = () => setDrawer(false);
+function setFull(col) {
+  document.querySelectorAll('.col').forEach(c => { c.classList.toggle('big', c === col); c.querySelector('.b-full').textContent = c === col ? 'Thu nhỏ' : 'Phóng to'; });
+  document.body.classList.toggle('full', !!col);
+  requestAnimationFrame(layout);
+}
+cols.addEventListener('click', e => {
+  const b = e.target.closest('.b-full'); if (!b) return;
+  const col = b.closest('.col');
+  setFull(col.classList.contains('big') ? null : col);
+});
+addEventListener('keydown', e => { if (e.key === 'Escape') { setDrawer(false); setFull(null); } });
+layout();
+</script>
+</body></html>
