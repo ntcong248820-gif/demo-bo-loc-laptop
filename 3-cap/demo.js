@@ -216,6 +216,10 @@
   const webName = w => w.split('|').pop();
   function change(id) {                                      // nút này khác web hiện tại ra sao (null = giữ nguyên)
     const n = N[id], src = (n.web || []).map(webName);
+    if (D.ban === 'quy-trinh' && n.luat) {                   // bản theo luật Quy_Trình: nhãn góc nói giá trị đi đâu, rê chuột đọc lý do
+      const k = n.luat_k === 'khac' ? 'gop' : n.luat_k === 'cum' ? 'moi' : 'doi';
+      return { k, tag: { gop: 'Khác', moi: 'Cụm', doi: 'Luật' }[k], text: n.luat };
+    }
     if (n.de_xuat === 'Gộp') return { k: 'gop', tag: 'Gộp', text: 'Gộp từ: ' + src.join(', ') };
     if (n.de_xuat === 'Tách') return { k: 'tach', tag: 'Tách', text: 'Tách từ: ' + src.join(', ') };
     if (n.de_xuat === 'Thêm mới') return { k: 'moi', tag: 'Mới', text: 'Nút mới, web chưa có' };
@@ -233,6 +237,7 @@
     return { cls: ' demo-has-note', inner: `<i class="demo-corner demo-corner-${c.k}" data-note="${esc(c.text)}">${c.tag}</i>` };
   }
   function groupNote(g) {                                    // bộ lọc này lấy từ bộ lọc nào trên web
+    if (D.ban === 'quy-trinh' && g.luat) return `<span class="demo-gnote">${tagHtml({ k: 'doi', tag: 'Luật' })} ${esc(g.luat)}</span>`;
     if (g.nhan) return `<span class="demo-gnote">${tagHtml({ k: g.nhan.k, tag: { tach: 'Tách', gop: 'Gộp', doi: 'Đổi tên', moi: 'Mới' }[g.nhan.k] })} ${esc(g.nhan.text)}</span>`;
     const w = g.web_cu || [];
     if (w.length > 1) return `<span class="demo-gnote">${tagHtml({ k: 'gop', tag: 'Gộp' })} Gộp từ ${w.length} bộ lọc: ${esc(w.join(', '))}</span>`;
@@ -240,10 +245,13 @@
     return '';
   }
   function mountNoteBar() {
-    const ban = D.ban === 'tinh-gon' ? 'Demo bản tinh gọn bộ lọc hiện có (1 cấp)' : 'Demo bản 2 cấp (bấm Lọc; chip có dấu ▾ như Intel ▾: bấm là lọc cả nhóm và mở khung chọn chi tiết bên dưới)';
+    const ban = D.ban === 'quy-trinh' ? 'Demo bộ lọc 2 cấp theo quy trình mới (chip ▾ là cụm hoặc nhóm "Khác": bấm là lọc cả nhóm và mở khung bên dưới)'
+      : D.ban === 'tinh-gon' ? 'Demo bản tinh gọn bộ lọc hiện có (1 cấp)' : 'Demo bản 2 cấp (bấm Lọc; chip có dấu ▾ như Intel ▾: bấm là lọc cả nhóm và mở khung chọn chi tiết bên dưới)';
     const link = D.so_sanh ? `<a href="${esc(D.so_sanh)}">So sánh với bộ lọc hiện tại →</a>` : '';
     document.body.insertAdjacentHTML('afterbegin', `<div id="demo-notebar"><b>${ban}</b>
-      <span class="demo-leg">So với bộ lọc hiện tại trên web: ${tagHtml({ k: 'gop', tag: 'Gộp' })} nhiều nút thành 1 ${tagHtml({ k: 'tach', tag: 'Tách' })} 1 nút thành nhiều ${tagHtml({ k: 'doi', tag: 'Đổi tên' })} ${tagHtml({ k: 'moi', tag: 'Mới' })} nút thêm mới. Nhãn nhỏ mờ ở góc nút, rê chuột vào nút để đọc chi tiết. Nút không có nhãn là giữ nguyên.</span>
+      <span class="demo-leg">${D.ban === 'quy-trinh'
+        ? `${tagHtml({ k: 'moi', tag: 'Cụm' })} nút cha gom theo hãng ${tagHtml({ k: 'gop', tag: 'Khác' })} nhóm hoặc giá trị gom phần không được hiện riêng ${tagHtml({ k: 'doi', tag: 'Luật' })} hiện riêng theo luật. Rê chuột vào nút để đọc lượt tìm, số máy và lý do.`
+        : `So với bộ lọc hiện tại trên web: ${tagHtml({ k: 'gop', tag: 'Gộp' })} nhiều nút thành 1 ${tagHtml({ k: 'tach', tag: 'Tách' })} 1 nút thành nhiều ${tagHtml({ k: 'doi', tag: 'Đổi tên' })} ${tagHtml({ k: 'moi', tag: 'Mới' })} nút thêm mới. Nhãn nhỏ mờ ở góc nút, rê chuột vào nút để đọc chi tiết. Nút không có nhãn là giữ nguyên.`}</span>
       <label><input type="checkbox" id="demo-notetoggle" checked> Hiện ghi chú</label>${link}
       <div id="demo-pageinfo"></div></div>`);
     $('#demo-notetoggle').addEventListener('change', e => document.body.classList.toggle('demo-hide-notes', !e.target.checked));

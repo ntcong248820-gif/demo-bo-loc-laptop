@@ -1,0 +1,61 @@
+/* Demo chỉ cần rất ít CSS riêng: giao diện dùng lại lớp CSS của chính web (đã chép về assets/css).
+   Nút/hàng nút/chip/bảng Lọc đều dùng đúng lớp trang thật nên không cần viết thêm. */
+#demo-filter-root { display: block; }
+#demo-filter-root a { text-decoration: none; }
+#demo-empty { padding: 60px 0; text-align: center; color: #667085; font-size: 15px; grid-column: 1 / -1; }
+/* thanh kéo giá: 2 núm kéo trên cùng 1 đường (trang thật làm bằng 2 ô range chồng nhau) */
+#demo-pmin, #demo-pmax { pointer-events: none; background: transparent; height: 4px; top: 0; }
+#demo-pmin::-webkit-slider-thumb, #demo-pmax::-webkit-slider-thumb {
+  pointer-events: auto; -webkit-appearance: none; appearance: none; width: 18px; height: 18px; border-radius: 50%;
+  background: #2a83e9; border: 2px solid #fff; box-shadow: 0 0 0 1px #2a83e9; cursor: pointer; }
+#demo-pmin::-moz-range-thumb, #demo-pmax::-moz-range-thumb {
+  pointer-events: auto; width: 16px; height: 16px; border-radius: 50%; background: #2a83e9; border: 2px solid #fff; cursor: pointer; }
+
+/* ghi chú thay đổi so với bộ lọc hiện tại: thanh trên cùng, nhãn trên nút, dòng ghi chú nhỏ */
+#demo-notebar { position: sticky; top: 0; z-index: 2000; background: #111827; color: #fff; font: 13px/1.5 Inter, system-ui, sans-serif;
+  padding: 8px 16px; display: flex; flex-wrap: wrap; gap: 6px 16px; align-items: center; }
+#demo-notebar a { color: #93c5fd; text-decoration: underline; }
+#demo-notebar label { cursor: pointer; }
+.demo-tag { display: inline-block; font-size: 11px; font-weight: 700; line-height: 1; padding: 3px 7px; border-radius: 999px; margin: 0 4px; vertical-align: middle; }
+.demo-tag-gop { background: #fde68a; color: #78350f; }
+.demo-tag-tach { background: #bfdbfe; color: #1e3a8a; }
+.demo-tag-doi { background: #99f6e4; color: #134e4a; }
+.demo-tag-moi { background: #e9d5ff; color: #581c87; }
+/* nhãn ở góc nút: nhỏ, mờ, đè lên viền nên không làm đổi kích thước hay vị trí nút; rê chuột vào nút thì rõ lên và hiện chữ ghi chú */
+.demo-has-note { position: relative; }
+.demo-corner { position: absolute; top: -7px; right: 6px; font-style: normal; font-size: 9px; font-weight: 700; line-height: 1; padding: 2px 5px;
+  border-radius: 999px; opacity: .5; pointer-events: none; z-index: 2; white-space: nowrap; }
+.demo-corner::after { content: attr(data-note); display: none; position: absolute; top: 15px; right: 0; width: max-content; max-width: 260px; white-space: normal;
+  font-size: 11px; font-weight: 400; line-height: 1.35; text-align: left; padding: 5px 8px; border-radius: 6px; background: #111827; color: #fff; box-shadow: 0 2px 8px rgba(0,0,0,.25); }
+.demo-has-note:hover { z-index: 6; }
+.demo-has-note:hover .demo-corner { opacity: 1; }
+.demo-has-note:hover .demo-corner::after { display: block; }
+.demo-corner-gop { background: #fde68a; color: #78350f; } .demo-corner-tach { background: #bfdbfe; color: #1e3a8a; }
+.demo-corner-doi { background: #99f6e4; color: #134e4a; } .demo-corner-moi { background: #e9d5ff; color: #581c87; }
+.demo-gnote { font-size: 11px; font-weight: 400; color: #6b7280; margin-left: 8px; opacity: .55; }
+.demo-gnote .demo-tag { margin-left: 0; }
+body.demo-hide-notes #demo-filter-root .demo-corner, body.demo-hide-notes #demo-filter-root .demo-gnote { display: none; }
+
+/* thanh vàng: trang đang xem trên web là địa chỉ nào, có trang riêng không; dòng nhỏ ở chân bảng Lọc: bấm Xem sẽ đi đâu */
+#demo-pageinfo { flex-basis: 100%; margin: 2px -16px -8px; padding: 6px 16px; background: #fef3c7; color: #1f2937; }
+#demo-pageinfo code, .demo-dest code { font: 12px/1.3 ui-monospace, Menlo, monospace; background: rgba(0,0,0,.06); padding: 1px 5px; border-radius: 4px; }
+#demo-pageinfo b { margin: 0 6px; }
+.demo-pi-ok { color: #067647; } .demo-pi-no { color: #b54708; }
+.demo-dest { font-size: 12px; line-height: 1.35; color: #475467; max-width: 330px; margin-right: auto; }
+
+/* 2 cấp: chip ▾ và khung xổ bên dưới hàng */
+.demo-exp { cursor: pointer; user-select: none; }
+.demo-exp .demo-chev { font-size: 10px; display: inline-block; margin-left: 2px; transition: transform .15s; }
+.demo-exp.is-open .demo-chev { transform: rotate(180deg); }
+.demo-exp.is-open { background: #f2f4f7 !important; }
+.demo-panel { flex-basis: 100%; width: 100%; background: #f9fafb; border: 1px solid #eaecf0; border-radius: 10px; padding: 10px 12px;
+  display: flex; flex-direction: column; gap: 8px; }
+.demo-panel.is-opening { animation: demoPanelIn .16s ease-out; }
+.demo-line { display: flex; align-items: center; gap: 10px; }
+.demo-lab { flex: 0 0 104px; font-size: 12px; color: #667085; }
+.demo-panel.no-lab .demo-lab { display: none; }
+.demo-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.demo-head { font-weight: 600; }
+@media (max-width: 640px) { .demo-line { flex-direction: column; align-items: flex-start; gap: 4px; } .demo-lab { flex-basis: auto; } .demo-lab:empty { display: none; } }
+@keyframes demoPanelIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .demo-panel.is-opening { animation: none; } }

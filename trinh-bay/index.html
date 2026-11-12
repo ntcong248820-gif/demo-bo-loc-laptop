@@ -71,6 +71,7 @@ body.full .col:not(.big) { display: none; }
 .lk { font: 600 13px Inter, system-ui, sans-serif; color: var(--tim); background: none; border: 0; padding: 0; cursor: pointer; white-space: nowrap; }
 .lk:hover { text-decoration: underline; }
 body.an-luat .ct, body.an-luat .the, body.an-luat .moc-lg, body.an-luat #d-thu .pill, body.an-luat #d-thu .keo { display: none; }
+body.qt #b-luat, body.qt .ct, body.qt #d-thu .pill { display: none !important; } body.qt #d-thu .keo { display: flex !important; } body.qt .the { display: inline-block !important; }
 /* Đầu cột: tên, số, 1 thẻ cho biết cột có áp dụng công thức không. Cách gộp chi tiết chỉ hiện khi bấm nút "Xem cách gộp" ở dòng chú giải. */
 .cg { display: flex; align-items: center; gap: 4px 10px; flex-wrap: wrap; margin-top: 6px; }
 .the { font-size: 12.5px; font-weight: 700; border-radius: 999px; padding: 3px 10px; white-space: nowrap; }
@@ -121,7 +122,7 @@ body:not(.mo-ct) .lc { display: none; }
   .hint { display: none; }
 }
 </style></head>
-<body class="an-luat">
+<body class="an-luat qt">
 <div class="top">
   <h1>Bộ lọc trang Laptop</h1>
   <div class="tog" id="tog" role="group" aria-label="Chọn cột để xem"></div>
@@ -157,7 +158,7 @@ body:not(.mo-ct) .lc { display: none; }
 </div>
 
 <script>
-const CFG = {"moc": 200, "thu_order": [{"ten": "Core Ultra X9", "luot": 40, "kieu": "ten", "bo_loc": "CPU", "pa1_gop": "Core Ultra X", "pa2_gop": "CPU khác", "pa3": "Nằm trong khung Intel ▾", "pa3_them": false}, {"ten": "Ryzen AI Max 300", "luot": 190, "kieu": "ten", "bo_loc": "CPU", "pa1_gop": "Ryzen AI", "pa2_gop": "CPU khác", "pa3": "Nằm trong khung AMD ▾", "pa3_them": false}, {"ten": "Core i5", "luot": 2070, "kieu": "ten", "bo_loc": "CPU", "pa1_gop": "", "pa2_gop": "", "pa3": "Nằm trong khung Intel ▾", "pa3_them": false}, {"ten": "RAM 24 GB", "luot": 50, "kieu": "so-do", "bo_loc": "RAM", "pa1_gop": "24 - 32 GB", "pa2_gop": "24 - 32 GB", "pa3": "Hiện thẳng ở màn hình đầu, tên 24 GB", "pa3_them": true}, {"ten": "CPU dòng mới của Intel", "luot": 0, "kieu": "moi", "bo_loc": "CPU", "pa1_gop": "", "pa2_gop": "", "pa3": "Nằm trong khung Intel ▾", "pa3_them": false}, {"ten": "Tiện ích mới", "luot": 0, "kieu": "moi", "bo_loc": "Tiện ích", "pa1_gop": "", "pa2_gop": "", "pa3": "Hiện thẳng ở màn hình đầu", "pa3_them": true}], "ct": {"he_so": 10, "tong": 173540, "so_gt": 85, "chia_deu": 2042, "moc_tho": 204, "pt_cho_1": "1,18%", "duoi": 43, "duoi_luot": 2370, "pt_cho": 51, "pt_luot_so": 1.37, "pt_luot": "1,4", "gap_nhom": 37, "vd": [{"ten": "Gaming", "luot": 60080, "pt_luot": "34,6%", "gap": "0,03", "gop": false}, {"ten": "RAM 16 GB", "luot": 790, "pt_luot": "0,46%", "gap": "2,6", "gop": false}, {"ten": "SSD 256 GB", "luot": 130, "pt_luot": "0,075%", "gap": "16", "gop": true}, {"ten": "RAM 24 GB", "luot": 50, "pt_luot": "0,029%", "gap": "41", "gop": true}, {"ten": "240 Hz", "luot": 40, "pt_luot": "0,023%", "gap": "51", "gop": true}], "vd_buoc": 3}, "ban": [{"id": "hien-tai", "ten": "Hiện tại", "mo_ta": "Web đang chạy", "cau": "", "luat": {"ap": "chua", "the": "Chưa có rule", "tieu_de": "Order giá trị nào thì tạo giá trị đó", "y": [["43 trên 85 giá trị chưa đủ 200 lượt tìm/tháng", ""]], "luu": ""}, "bo_loc": 15, "dau": 85, "khung": 0}, {"id": "pa3", "ten": "Phương án 2 cấp", "mo_ta": "Đề xuất mới", "cau": "Cần IT làm khung xổ ▾", "luat": {"ap": "khong", "the": "Không áp dụng công thức", "tieu_de": "Không gộp giá trị nào, chia 2 cấp", "y": [["Không xét mốc 200 lượt: giá trị nào còn máy cũng có mặt", ""], ["Màn hình đầu chỉ hiện nhóm lớn", "Intel ▾, AMD ▾ và Qualcomm ▾"], ["Bấm nhóm là lọc cả nhóm, đồng thời mở các giá trị chi tiết", "Bấm Intel ra mọi máy chip Intel, bấm thêm Core i5 ra máy Core i5"], ["Giá trị order thêm nằm trong khung, màn hình đầu không dài ra", ""]], "luu": ""}, "bo_loc": 11, "dau": 49, "khung": 42}]};
+const CFG = {"moc": 200, "thu_order": [{"ten": "Core Ultra X9", "luot": 40, "kieu": "ten", "bo_loc": "CPU", "pa1_gop": "Core Ultra X", "pa2_gop": "CPU khác", "pa3": "Vào Intel khác, trong khung Intel ▾", "pa3_them": false, "qt": {"cho": "khung Intel", "moc": 2049, "sp": 1, "khac": "Intel khác", "dau": false, "het": false, "top3": 390}}, {"ten": "Ryzen AI Max 300", "luot": 190, "kieu": "ten", "bo_loc": "CPU", "pa1_gop": "Ryzen AI", "pa2_gop": "CPU khác", "pa3": "Vào AMD khác, trong khung AMD ▾", "pa3_them": false, "qt": {"cho": "khung AMD", "moc": 2049, "sp": 2, "khac": "AMD khác", "dau": false, "het": false, "top3": 280}}, {"ten": "Core i5", "luot": 2070, "kieu": "ten", "bo_loc": "CPU", "pa1_gop": "", "pa2_gop": "", "pa3": "Nằm trong khung Intel ▾", "pa3_them": false, "qt": {"cho": "khung Intel", "moc": 2049, "sp": 34, "khac": "Intel khác", "dau": false, "het": false, "top3": 280}}, {"ten": "RAM 24 GB", "luot": 50, "kieu": "so-do", "bo_loc": "RAM", "pa1_gop": "24 - 32 GB", "pa2_gop": "24 - 32 GB", "pa3": "Nằm trong khung RAM khác ▾", "pa3_them": false, "qt": {"cho": "màn hình đầu bộ lọc RAM", "moc": 2049, "sp": 16, "khac": "RAM khác", "dau": true, "het": false, "top3": 330}}, {"ten": "CPU dòng mới của Intel", "luot": 0, "kieu": "moi", "bo_loc": "CPU", "pa1_gop": "", "pa2_gop": "", "pa3": "Nằm trong khung Intel ▾", "pa3_them": false, "qt": {"cho": "khung Intel", "moc": 2049, "sp": null, "khac": "Intel khác", "dau": false, "het": false, "top3": 390}}, {"ten": "Tiện ích mới", "luot": 0, "kieu": "moi", "bo_loc": "Tiện ích", "pa1_gop": "", "pa2_gop": "", "pa3": "Hiện thẳng ở màn hình đầu", "pa3_them": true, "qt": {"cho": "màn hình đầu bộ lọc Tiện ích", "moc": 2049, "sp": null, "khac": "Tiện ích khác", "dau": true, "het": false, "top3": 180}}], "ct": {"he_so": 10, "tong": 173540, "so_gt": 85, "chia_deu": 2042, "moc_tho": 204, "pt_cho_1": "1,18%", "duoi": 43, "duoi_luot": 2370, "pt_cho": 51, "pt_luot_so": 1.37, "pt_luot": "1,4", "gap_nhom": 37, "vd": [{"ten": "Gaming", "luot": 60080, "pt_luot": "34,6%", "gap": "0,03", "gop": false}, {"ten": "RAM 16 GB", "luot": 790, "pt_luot": "0,46%", "gap": "2,6", "gop": false}, {"ten": "SSD 256 GB", "luot": 130, "pt_luot": "0,075%", "gap": "16", "gop": true}, {"ten": "RAM 24 GB", "luot": 50, "pt_luot": "0,029%", "gap": "41", "gop": true}, {"ten": "240 Hz", "luot": 40, "pt_luot": "0,023%", "gap": "51", "gop": true}], "vd_buoc": 3}, "ban": [{"id": "hien-tai", "ten": "Hiện tại", "mo_ta": "Web đang chạy", "cau": "", "luat": {"ap": "chua", "the": "Chưa có rule", "tieu_de": "Order giá trị nào thì tạo giá trị đó", "y": [], "luu": ""}, "bo_loc": 15, "dau": 85, "khung": 0}, {"id": "pa3", "ten": "Phương án 2 cấp", "mo_ta": "Theo quy trình mới", "cau": "Cần IT làm khung xổ ▾", "luat": {"ap": "co", "the": "Theo quy trình mới", "tieu_de": "Gom theo cụm, mỗi chỗ một mốc, còn lại vào Khác", "y": [["Thuộc tính hiện khi có từ 200 lượt tìm và từ 3 máy, xếp theo lượt tìm cao xuống thấp", ""], ["Có từ 2 cụm (mỗi cụm từ 2 giá trị) và từ 6 giá trị thì gom thành nút ▾", "Intel ▾, AMD ▾, Qualcomm ▾"], ["Giá trị dưới 3 máy vào Khác", "Core i9, RTX 4060"], ["Từ 5 giá trị trở xuống thì hiện hết. Nhiều hơn: hiện giá trị đạt mốc chung (ít nhất 3 giá trị cao nhất), còn lại vào Khác", ""], ["Mốc chung = tổng lượt tìm cả bộ lọc (không tính Thương hiệu) ÷ tổng số giá trị = 174.130 ÷ 85 = 2.049 lượt", ""], ["Giá trị xếp A → Z", ""]], "luu": "Cả trang dùng 1 mốc chung, ở màn hình đầu lẫn trong khung ▾"}, "bo_loc": 11, "dau": 47, "khung": 33}]};
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const so = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
@@ -311,7 +312,14 @@ function ketQua(v, n) {
     r.pa1 = { c: v.pa1_gop ? `Vào chung ${v.pa1_gop}` : 'Gộp với giá trị cùng dòng' };
     r.pa2 = { c: `Vào ${v.pa2_gop || v.bo_loc + ' khác'}` };
   }
-  r.pa3 = { c: v.pa3, t: 'Không cần xét lượt tìm', them: v.pa3_them, dau: 'Màn hình đầu ' };
+  if (v.qt) {                                          // bản theo quy trình mới: so với mốc của chỗ giá trị rơi vào
+    const q = v.qt, sp = q.sp == null || q.sp >= 3, top = q.top3 != null && n > q.top3;
+    const du = sp && (q.het || n >= q.moc || top);
+    const ly = q.het ? 'Chỗ này từ 5 giá trị trở xuống nên hiện hết' : n >= q.moc ? `Đạt mốc chung ${so(q.moc)} lượt` : `Chưa đạt mốc chung nhưng nằm trong 3 giá trị nhiều lượt tìm nhất (cần trên ${so(q.top3)} lượt)`;
+    r.pa3 = du ? { c: `Hiện riêng ở ${q.cho}`, t: ly + (q.sp != null ? `, ${q.sp} máy` : ''), them: 1, dau: q.dau ? 'Màn hình đầu ' : 'Trong khung ' }
+      : { c: `Vào ${q.khac}`, t: (q.sp != null && q.sp < 3 ? `Chỉ ${q.sp} máy (dưới 3)` : `Chưa đạt mốc chung ${so(q.moc)} lượt`) +
+            '. Ngành hàng vẫn muốn hiện thì hiện thử 1 tháng, dưới 300 lượt truy cập thì bỏ hoặc gộp', dau: q.dau ? 'Màn hình đầu ' : 'Trong khung ' };
+  } else r.pa3 = { c: v.pa3, t: 'Không cần xét lượt tìm', them: v.pa3_them, dau: 'Màn hình đầu ' };
   r['hien-tai'] = { c: 'Có giá trị riêng', t: 'Order giá trị nào thì tạo giá trị đó', them: 1, dau: 'Màn hình đầu ' };
   return r;
 }
@@ -319,8 +327,8 @@ function veThu() {
   $('#vds').innerHTML = CFG.thu_order.map((v, i) => `<button class="vd-b${v === vd ? ' on' : ''}" data-i="${i}">${esc(v.ten)}${v.luot ? `<small>${so(v.luot)} lượt</small>` : ''}</button>`).join('');
   $('#luot').value = Math.min(luot, 1000);
   $('#luot-so').textContent = so(luot);
-  const du = luot >= CFG.moc, kq = $('#luot-kq');
-  kq.textContent = du ? `Đủ ${CFG.moc} lượt tìm` : `Chưa đủ ${CFG.moc} lượt tìm`; kq.className = 'kq ' + (du ? 'du' : 'chua');
+  const moc = vd.qt ? vd.qt.moc : CFG.moc, du = luot >= moc, kq = $('#luot-kq');
+  kq.textContent = (du ? `Đủ mốc ${so(moc)} lượt tìm` : `Chưa đủ mốc ${so(moc)} lượt tìm`) + (vd.qt ? ' (mốc chung)' : ''); kq.className = 'kq ' + (du ? 'du' : 'chua');
   const r = ketQua(vd, luot);
   $('#thu-kq').innerHTML = CFG.ban.filter(b => r[b.id]).map(b => `<div class="card"><h4>${esc(b.ten)}</h4><div class="mt">${esc(b.mo_ta)}</div>
     <div class="c">${esc(r[b.id].c)}</div><div class="t">${esc(r[b.id].t || '')}</div>

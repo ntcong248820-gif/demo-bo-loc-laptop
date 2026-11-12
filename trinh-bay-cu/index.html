@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Bộ lọc Laptop: Hiện tại và Phương án 2 cấp</title>
+<style>
+:root { --ink:#101828; --mut:#667085; --line:#e4e7ec; --bg:#eef0f3; --card:#fff; --tim:#6d28d9;
+  --gop:#f59e0b; --gop-bg:#fff3e0; --moi:#12b76a; --moi-bg:#ecfdf3; --an:#c4c8cf; --an-bg:#f2f4f7; }
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; background: var(--bg); color: var(--ink); font: 15px/1.45 Inter, system-ui, -apple-system, "Segoe UI", sans-serif; }
+body { display: flex; flex-direction: column; overflow-x: hidden; overflow-y: auto; }   /* màn hình thấp: trang cuộn dọc, bảng lọc không bị bóp */
+.top { display: flex; align-items: center; gap: 8px 14px; flex-wrap: wrap; padding: 8px 16px; background: #fff; border-bottom: 1px solid var(--line); }
+.top h1 { font-size: 18px; margin: 0 6px 0 0; white-space: nowrap; }
+.sp { flex: 1; }
+.tog { display: flex; gap: 6px; flex-wrap: wrap; }
+.tg { font: 600 13.5px Inter, system-ui, sans-serif; border: 1px solid #d0d5dd; background: #fff; color: #98a2b3; border-radius: 999px; padding: 5px 12px 5px 9px; cursor: pointer; white-space: nowrap; }
+.tg::before { content: ""; display: inline-block; width: 13px; height: 13px; border-radius: 4px; border: 1.5px solid #d0d5dd; margin-right: 7px; vertical-align: -2px; }
+.tg[aria-pressed="true"] { color: var(--ink); border-color: #b9a5f0; background: #f6f2ff; }
+.tg[aria-pressed="true"]::before { background: var(--tim); border-color: var(--tim); box-shadow: inset 0 0 0 2px #fff; }
+.btn { font: 600 14px Inter, system-ui, sans-serif; border: 1px solid #d0d5dd; background: #fff; color: var(--ink); border-radius: 8px; padding: 7px 14px; cursor: pointer; white-space: nowrap; }
+.btn:hover { background: #f9fafb; } .btn.on { background: var(--ink); color: #fff; border-color: var(--ink); }
+.btn.chinh { background: var(--tim); border-color: var(--tim); color: #fff; } .btn.chinh:hover { background: #5b21b6; }
+.sub { display: flex; gap: 4px 16px; flex-wrap: wrap; align-items: center; padding: 8px 18px 0; font-size: 12.5px; color: #475467; }
+.sw { display: inline-block; width: 22px; height: 14px; border-radius: 4px; border: 1.5px solid #d0d5dd; background: #fff; vertical-align: -2px; margin-right: 5px; }
+.sw.gop { background: var(--gop-bg); border-color: var(--gop); } .sw.moi { background: var(--moi-bg); border-color: var(--moi); }
+.sw.an { background: var(--an-bg); border-color: var(--an); border-style: dashed; }
+.so { display: inline-block; font: 700 11px/1 Inter, system-ui, sans-serif; padding: 2px 6px; border-radius: 999px; border: 1px solid #d0d5dd; color: #475467; background: #fff; margin-right: 5px; vertical-align: 1px; }
+.so.it { color: #b45309; border-color: var(--gop); }
+.hint { color: var(--mut); }
+.cols { flex: 1 0 auto; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-template-rows: auto minmax(460px, 1fr); gap: 0 8px; padding: 8px; }
+.col { display: grid; grid-row: span 2; grid-template-rows: subgrid; min-width: 0; min-height: 0; background: var(--card); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }   /* subgrid: phần đầu 4 cột cao bằng nhau, bảng lọc bắt đầu ngang hàng */
+.col.tat { display: none; }
+.head { padding: 7px 10px 7px 14px; border-bottom: 1px solid var(--line); }
+.h1r { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; align-items: start; }
+.ten { display: flex; align-items: baseline; gap: 0 10px; flex-wrap: wrap; }
+.head h2 { margin: 0; font-size: 17px; white-space: nowrap; }
+.mota { font-size: 13.5px; color: #344054; font-weight: 600; }
+.head .b-full { padding: 3px 10px; font-size: 12.5px; }
+.h2r { display: flex; align-items: baseline; gap: 2px 14px; flex-wrap: wrap; margin-top: 2px; }
+.stat { white-space: nowrap; font-size: 13px; color: var(--mut); }
+.stat b { font-size: 17px; color: var(--ink); margin-right: 4px; }
+.how { font-size: 12.5px; color: #344054; white-space: nowrap; }
+.how::before { content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #12b76a; margin-right: 6px; vertical-align: 1px; }
+.col[data-ban="pa3"] .how::before { background: #f79009; }
+.frame { position: relative; min-height: 0; overflow: hidden; background: #fff; }
+.frame iframe { position: absolute; left: 0; top: 0; border: 0; width: 1200px; transform-origin: 0 0; background: #fff; }
+body.full .cols { grid-template-columns: 1fr !important; }
+body.full .col:not(.big) { display: none; }
+.drawer { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; max-height: 82vh; overflow: auto; background: #fff; border-top: 1px solid var(--line);
+  box-shadow: 0 -10px 30px rgba(16,24,40,.18); transform: translateY(105%); transition: transform .2s ease; padding: 16px 20px 22px; }
+.drawer.open { transform: none; }
+.dh { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
+.drawer h3 { margin: 0; font-size: 19px; }
+.pill { display: inline-block; background: #f4ebff; color: #53389e; font-weight: 600; border-radius: 999px; padding: 4px 12px; font-size: 14px; }
+/* Dải công thức ở đầu trang: vì sao gộp, công thức, mốc của Laptop, rule. Đây là phần cần đọc trước khi nhìn 4 cột. */
+.ct { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.35fr) minmax(0, 1fr) minmax(0, 1fr); gap: 8px; padding: 8px 8px 0; }
+.ct-b { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 9px 14px 10px; min-width: 0; }
+.ct-b.chinh { border-color: #cdbdf7; background: #faf8ff; }
+.ct-n { font-size: 11.5px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--mut); margin-bottom: 5px; }
+.ct-l { font-size: 16px; font-weight: 700; line-height: 1.5; }
+.ct-l.to { font-size: 24px; line-height: 1.15; } .ct-l.to small { font-size: 14px; font-weight: 600; color: #344054; margin-left: 4px; }
+.ct-s { font-size: 13.5px; color: #344054; margin-top: 3px; }
+.o { display: inline-block; background: #f4ebff; color: #53389e; border-radius: 6px; padding: 0 7px; white-space: nowrap; }
+.pt { color: var(--mut); font-weight: 500; margin: 0 2px; }
+.thanh { display: grid; grid-template-columns: 62px minmax(0, 1fr) auto; gap: 8px; align-items: center; font-size: 13.5px; margin-top: 5px; }
+.thanh .tn { color: var(--mut); }
+.thanh .tv { display: block; height: 12px; border-radius: 6px; background: #f2f4f7; overflow: hidden; }
+.thanh .tv b { display: block; height: 100%; min-width: 4px; border-radius: 6px; background: var(--gop); }
+.thanh .tv b.lt { background: var(--tim); }
+.thanh .ts b { font-size: 16px; }
+.ct ul { margin: 0; padding-left: 17px; font-size: 14px; line-height: 1.5; }
+.lk { font: 600 13px Inter, system-ui, sans-serif; color: var(--tim); background: none; border: 0; padding: 0; cursor: pointer; white-space: nowrap; }
+.lk:hover { text-decoration: underline; }
+body.an-luat .ct, body.an-luat .the, body.an-luat .moc-lg, body.an-luat #d-thu .pill, body.an-luat #d-thu .keo { display: none; }
+/* Đầu cột: tên, số, 1 thẻ cho biết cột có áp dụng công thức không. Cách gộp chi tiết chỉ hiện khi bấm nút "Xem cách gộp" ở dòng chú giải. */
+.cg { display: flex; align-items: center; gap: 4px 10px; flex-wrap: wrap; margin-top: 6px; }
+.the { font-size: 12.5px; font-weight: 700; border-radius: 999px; padding: 3px 10px; white-space: nowrap; }
+.the.co { background: #f4ebff; color: #53389e; } .the.khong { background: #fff3e0; color: #b45309; } .the.chua { background: #f2f4f7; color: #475467; }
+.lc { margin-top: 6px; padding-top: 6px; border-top: 1px dashed var(--line); font-size: 13.5px; line-height: 1.38; }
+.lc-t { font-weight: 700; color: #53389e; }
+.col[data-ban="hien-tai"] .lc-t { color: #475467; }
+.lc ul { margin: 3px 0 0; padding-left: 17px; }
+.lc li { margin: 2px 0; }
+.lc .vd { color: var(--mut); font-size: 12.5px; }
+.lc-l { margin-top: 4px; font-size: 12.5px; color: #b54708; }
+.lc-l::before { content: "Lưu ý: "; font-weight: 700; }
+body:not(.mo-ct) .lc { display: none; }
+/* Bảng "Cách tính" kéo lên từ đáy */
+.ctg { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr) minmax(0, 1fr); gap: 10px; }
+.ctg ol, .ctg ul { margin: 6px 0 0; padding-left: 20px; font-size: 14.5px; line-height: 1.6; }
+.ctg table { border-collapse: collapse; width: 100%; font-size: 14px; margin-top: 6px; }
+.ctg th { text-align: right; font-weight: 600; color: var(--mut); font-size: 12.5px; padding: 4px 8px; border-bottom: 1px solid var(--line); }
+.ctg td { text-align: right; padding: 6px 8px; border-bottom: 1px solid #f2f4f7; font-variant-numeric: tabular-nums; }
+.ctg th:first-child, .ctg td:first-child { text-align: left; }
+.ctg td.g { font-weight: 800; }
+.ctg .kq { font-size: 12.5px; padding: 2px 10px; }
+.ctg .cthuc { font-size: 15.5px; font-weight: 700; line-height: 1.7; }
+.cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.card { border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; }
+.card h4 { margin: 0; font-size: 16px; }
+.card .mt { font-size: 13.5px; color: #344054; font-weight: 600; margin-bottom: 6px; }
+.vds { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+.vd-b { font: 600 13.5px Inter, system-ui, sans-serif; border: 1px solid #d0d5dd; background: #fff; border-radius: 8px; padding: 6px 12px; cursor: pointer; }
+.vd-b small { font-weight: 500; color: var(--mut); margin-left: 6px; }
+.vd-b.on { border-color: var(--tim); background: #f6f2ff; }
+.keo { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 14px; }
+.keo label { font-weight: 600; }
+.keo input[type=range] { flex: 1; min-width: 200px; max-width: 520px; accent-color: var(--tim); }
+.keo output { font-size: 22px; font-weight: 800; min-width: 70px; }
+.kq { font-weight: 700; border-radius: 999px; padding: 4px 12px; font-size: 14px; }
+.kq.du { background: var(--moi-bg); color: #067647; } .kq.chua { background: var(--gop-bg); color: #b45309; }
+.card .c { font-size: 17px; font-weight: 700; margin-top: 4px; }
+.card .t { font-size: 13.5px; color: #344054; white-space: pre-line; margin-top: 2px; }
+.card .tag { display: inline-block; margin-top: 8px; font-size: 12.5px; font-weight: 700; border-radius: 999px; padding: 3px 10px; background: #f2f4f7; color: #475467; }
+.card .tag.them { background: #fef3f2; color: #b42318; }
+@media (prefers-reduced-motion: reduce) { .drawer { transition: none; } }
+@media (max-width: 1250px) { .ct { grid-template-columns: repeat(2, minmax(0, 1fr)); } .ctg { grid-template-columns: 1fr; } }
+@media (max-width: 900px) {
+  body { overflow: auto; height: auto; } html { height: auto; }
+  .cols { grid-template-columns: 1fr !important; grid-template-rows: none; gap: 8px; } .col { height: 86vh; grid-row: auto; grid-template-rows: auto minmax(0, 1fr); }
+  .cards, .ct, .ctg { grid-template-columns: 1fr; }
+  .hint { display: none; }
+}
+</style></head>
+<body class="an-luat">
+<div class="top">
+  <h1>Bộ lọc trang Laptop</h1>
+  <div class="tog" id="tog" role="group" aria-label="Chọn cột để xem"></div>
+  <span class="sp"></span>
+  <button class="btn" id="b-luat">Công thức: ẩn</button>
+  <button class="btn chinh" id="b-thu">Thử order</button>
+  <button class="btn on" id="b-ghi">Ghi chú: bật</button>
+</div>
+<div class="ct" id="ct"></div>
+<div class="sub">
+  <span><i class="sw"></i>Giữ</span>
+  <span><i class="sw gop"></i>Gộp</span>
+  <span><i class="sw moi"></i>Mới hoặc tách</span>
+  <span><i class="sw an"></i>Bỏ giá trị riêng</span>
+  <span><i class="so">780</i>Số ở góc: lượt tìm/tháng</span>
+  <span class="moc-lg"><i class="so it">50</i>Màu cam: chưa đủ <b id="moc-1"></b> lượt</span>
+  <span class="sp"></span>
+  <span class="hint">Rê chuột vào 1 giá trị để xem lý do</span>
+  <button class="lk" id="b-chi-tiet">Xem cách làm của từng cột</button>
+</div>
+<div class="cols" id="cols"></div>
+
+<div class="drawer" id="d-ct" aria-hidden="true">
+  <div class="dh"><h3>Cách tính: 1 giá trị chiếm chỗ gấp mấy lần</h3><span class="sp"></span><button class="btn b-dong">Đóng</button></div>
+  <div class="ctg" id="ctg"></div>
+</div>
+
+<div class="drawer" id="d-thu" aria-hidden="true">
+  <div class="dh"><h3>Thử order 1 giá trị mới</h3><span class="pill">Mốc <span id="moc-3"></span> lượt tìm/tháng</span><span class="sp"></span><button class="btn b-dong">Đóng</button></div>
+  <div class="vds" id="vds"></div>
+  <div class="keo"><label for="luot">Lượt tìm/tháng</label><input type="range" id="luot" min="0" max="1000" step="10"><output id="luot-so" for="luot"></output><span class="kq" id="luot-kq"></span></div>
+  <div class="cards" id="thu-kq"></div>
+</div>
+
+<script>
+const CFG = {"moc": 200, "thu_order": [{"ten": "Core Ultra X9", "luot": 40, "kieu": "ten", "bo_loc": "CPU", "pa1_gop": "Core Ultra X", "pa2_gop": "CPU khác", "pa3": "Nằm trong khung Intel ▾", "pa3_them": false}, {"ten": "Ryzen AI Max 300", "luot": 190, "kieu": "ten", "bo_loc": "CPU", "pa1_gop": "Ryzen AI", "pa2_gop": "CPU khác", "pa3": "Nằm trong khung AMD ▾", "pa3_them": false}, {"ten": "Core i5", "luot": 2070, "kieu": "ten", "bo_loc": "CPU", "pa1_gop": "", "pa2_gop": "", "pa3": "Nằm trong khung Intel ▾", "pa3_them": false}, {"ten": "RAM 24 GB", "luot": 50, "kieu": "so-do", "bo_loc": "RAM", "pa1_gop": "24 - 32 GB", "pa2_gop": "24 - 32 GB", "pa3": "Hiện thẳng ở màn hình đầu, tên 24 GB", "pa3_them": true}, {"ten": "CPU dòng mới của Intel", "luot": 0, "kieu": "moi", "bo_loc": "CPU", "pa1_gop": "", "pa2_gop": "", "pa3": "Nằm trong khung Intel ▾", "pa3_them": false}, {"ten": "Tiện ích mới", "luot": 0, "kieu": "moi", "bo_loc": "Tiện ích", "pa1_gop": "", "pa2_gop": "", "pa3": "Hiện thẳng ở màn hình đầu", "pa3_them": true}], "ct": {"he_so": 10, "tong": 173540, "so_gt": 85, "chia_deu": 2042, "moc_tho": 204, "pt_cho_1": "1,18%", "duoi": 43, "duoi_luot": 2370, "pt_cho": 51, "pt_luot_so": 1.37, "pt_luot": "1,4", "gap_nhom": 37, "vd": [{"ten": "Gaming", "luot": 60080, "pt_luot": "34,6%", "gap": "0,03", "gop": false}, {"ten": "RAM 16 GB", "luot": 790, "pt_luot": "0,46%", "gap": "2,6", "gop": false}, {"ten": "SSD 256 GB", "luot": 130, "pt_luot": "0,075%", "gap": "16", "gop": true}, {"ten": "RAM 24 GB", "luot": 50, "pt_luot": "0,029%", "gap": "41", "gop": true}, {"ten": "240 Hz", "luot": 40, "pt_luot": "0,023%", "gap": "51", "gop": true}], "vd_buoc": 3}, "ban": [{"id": "hien-tai", "ten": "Hiện tại", "mo_ta": "Web đang chạy", "cau": "", "luat": {"ap": "chua", "the": "Chưa có rule", "tieu_de": "Order giá trị nào thì tạo giá trị đó", "y": [["43 trên 85 giá trị chưa đủ 200 lượt tìm/tháng", ""]], "luu": ""}, "bo_loc": 15, "dau": 85, "khung": 0}, {"id": "pa3", "ten": "Phương án 2 cấp", "mo_ta": "Đề xuất mới", "cau": "Cần IT làm khung xổ ▾", "luat": {"ap": "khong", "the": "Không áp dụng công thức", "tieu_de": "Không gộp giá trị nào, chia 2 cấp", "y": [["Không xét mốc 200 lượt: giá trị nào còn máy cũng có mặt", ""], ["Màn hình đầu chỉ hiện nhóm lớn", "Intel ▾, AMD ▾ và Qualcomm ▾"], ["Bấm nhóm là lọc cả nhóm, đồng thời mở các giá trị chi tiết", "Bấm Intel ra mọi máy chip Intel, bấm thêm Core i5 ra máy Core i5"], ["Giá trị order thêm nằm trong khung, màn hình đầu không dài ra", ""]], "luu": ""}, "bo_loc": 11, "dau": 49, "khung": 42}]};
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const so = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+['#moc-1', '#moc-3'].forEach(s => $(s).textContent = CFG.moc);
+
+/* ---------- dải công thức và bảng "Cách tính" ---------- */
+const CT = CFG.ct, o = t => `<span class="o">${t}</span>`, chia = '<span class="pt">÷</span>';
+$('#ct').innerHTML = `
+  <div class="ct-b"><div class="ct-n">Vì sao gộp</div>
+    <div class="ct-s"><b>${CT.duoi} trên ${CT.so_gt}</b> giá trị chưa đủ mốc</div>
+    <div class="thanh"><span class="tn">Chiếm</span><i class="tv"><b style="width:${CT.pt_cho}%"></b></i><span class="ts"><b>${CT.pt_cho}%</b> số chỗ</span></div>
+    <div class="thanh"><span class="tn">Mang về</span><i class="tv"><b class="lt" style="width:${CT.pt_luot_so}%"></b></i><span class="ts"><b>${CT.pt_luot}%</b> lượt tìm</span></div></div>
+  <div class="ct-b chinh"><div class="ct-n">Công thức</div>
+    <div class="ct-l">Chiếm chỗ gấp mấy lần <span class="pt">=</span> ${o('% số chỗ')} ${chia} ${o('% lượt tìm')}</div>
+    <div class="ct-s"><b>Gấp từ ${CT.he_so} lần trở lên thì gộp</b></div>
+    <div class="ct-s"><button class="lk" id="b-ct">Xem cách tính</button></div></div>
+  <div class="ct-b"><div class="ct-n">Mốc của Laptop</div>
+    <div class="ct-l to">${CFG.moc}<small>lượt tìm/tháng</small></div>
+    <div class="ct-s">${so(CT.tong)} lượt ${chia} ${CT.so_gt} giá trị ${chia} ${CT.he_so}, làm tròn</div></div>
+  <div class="ct-b"><div class="ct-n">Rule</div>
+    <ul><li><b>Từ ${CFG.moc} lượt:</b> có giá trị riêng</li><li><b>Chưa đủ ${CFG.moc} lượt:</b> gộp</li><li><b>Đã tạo thì không gỡ</b></li></ul></div>`;
+const vb = CT.vd[CT.vd_buoc];
+$('#ctg').innerHTML = `
+  <div class="card"><h4>Tính thử ${esc(vb.ten)}</h4>
+    <ol><li>% số chỗ = 1 ${chia} ${CT.so_gt} giá trị = <b>${CT.pt_cho_1}</b></li>
+      <li>% lượt tìm = ${so(vb.luot)} ${chia} ${so(CT.tong)} lượt = <b>${vb.pt_luot}</b></li>
+      <li>${CT.pt_cho_1} ${chia} ${vb.pt_luot} = <b>gấp ${vb.gap} lần</b></li></ol>
+    <div class="ct-s">Quá ${CT.he_so} lần nên <span class="kq chua">Gộp</span></div></div>
+  <div class="card"><h4>5 giá trị đang có trên web</h4>
+    <table><tr><th>Giá trị</th><th>Lượt tìm</th><th>% số chỗ</th><th>% lượt tìm</th><th>Chiếm chỗ gấp</th><th>Kết quả</th></tr>
+    ${CT.vd.map(v => `<tr><td>${esc(v.ten)}</td><td>${so(v.luot)}</td><td>${CT.pt_cho_1}</td><td>${v.pt_luot}</td><td class="g">${v.gap} lần</td>
+      <td><span class="kq ${v.gop ? 'chua' : 'du'}">${v.gop ? 'Gộp' : 'Giữ riêng'}</span></td></tr>`).join('')}</table></div>
+  <div class="card"><h4>Đổi ra mốc để tra nhanh</h4>
+    <div class="cthuc">Mốc <span class="pt">=</span> ${o('Tổng lượt tìm')} ${chia} ${o('Số giá trị')} ${chia} ${CT.he_so}</div>
+    <ul><li>Chia đều thì mỗi giá trị mang về ${so(CT.tong)} ${chia} ${CT.so_gt} = <b>${so(CT.chia_deu)} lượt</b></li>
+      <li>Gấp ${CT.he_so} lần nghĩa là mang về chưa bằng 1 phần ${CT.he_so} mức chia đều</li>
+      <li>${so(CT.chia_deu)} ${chia} ${CT.he_so} = ${CT.moc_tho}, làm tròn <b>${CFG.moc} lượt tìm/tháng</b></li>
+      <li>Ngành hàng khác: thay tổng lượt tìm và số giá trị của ngành đó</li></ul></div>`;
+
+/* ---------- 4 cột ---------- */
+const cols = $('#cols');
+cols.innerHTML = CFG.ban.map(b => `<section class="col" data-ban="${b.id}">
+  <div class="head">
+    <div class="h1r"><div class="ten"><h2>${esc(b.ten)}</h2><span class="mota">${esc(b.mo_ta)}</span></div><button class="btn b-full">Phóng to</button></div>
+    <div class="h2r"><span class="stat"><b>${b.bo_loc}</b>bộ lọc</span><span class="stat"><b>${b.dau}</b>giá trị${b.khung ? ' màn hình đầu' : ''}</span>${b.khung ? `<span class="stat"><b>${b.khung}</b>trong khung ▾</span>` : ''}</div>
+    <div class="cg"><span class="the ${b.luat.ap}">${esc(b.luat.the)}</span>${b.cau ? `<span class="how">${esc(b.cau)}</span>` : ''}</div>
+    <div class="lc"><div class="lc-t">${esc(b.luat.tieu_de)}</div>
+      <ul>${b.luat.y.map(y => `<li>${esc(y[0])}${y[1] ? `<div class="vd">Ví dụ: ${esc(y[1])}</div>` : ''}</li>`).join('')}</ul>
+      ${b.luat.luu ? `<div class="lc-l">${esc(b.luat.luu)}</div>` : ''}</div>
+  </div>
+  <div class="frame"><iframe src="cot-${b.id}.html" title="Trang Laptop, bản ${esc(b.ten)}"></iframe></div></section>`).join('');
+$('#tog').innerHTML = CFG.ban.map(b => `<button class="tg" data-ban="${b.id}" aria-pressed="true">${esc(b.ten)}</button>`).join('');
+cols.style.gridTemplateColumns = `repeat(${CFG.ban.length}, minmax(0, 1fr))`;
+
+const frames = $$('.col iframe');
+let notesOn = true;
+const send = (f, m) => f.contentWindow && f.contentWindow.postMessage(Object.assign({ tb: 1 }, m), '*');
+const rong = new Map();                               // bề ngang mỗi cột cần hiện: tới mép phải bảng Lọc (cột tự báo)
+const popw = new Map();                               // bề ngang bảng Lọc đã báo cho từng cột
+function layout() {                                   // phóng phần bảng Lọc cho vừa bề ngang cột; phần lưới máy bên phải bị cắt
+  const full = document.body.classList.contains('full');
+  for (const f of frames) {
+    const box = f.parentElement, w = box.clientWidth, h = box.clientHeight;
+    if (!w) continue;
+    // cột hẹp thì bảng Lọc hẹp theo, để chữ không bị thu quá nhỏ
+    const pw = Math.round(Math.min(720, Math.max(440, w / 0.85 - 40)) / 20) * 20;
+    if (popw.get(f) !== pw) { popw.set(f, pw); send(f, { type: 'pop', w: pw }); }
+    const W0 = rong.get(f) || pw + 40;
+    const s = Math.min(w / W0, full ? 1.6 : 1.3);      // chỉ còn 1 cột thì không phóng quá to, đặt bảng Lọc vào giữa
+    f.style.width = W0 + 'px';                         // khung chỉ rộng tới mép bảng Lọc, không lộ lưới máy phía sau
+    f.style.left = Math.max(0, (w - W0 * s) / 2) + 'px';
+    f.style.transform = `scale(${s})`;
+    f.style.height = Math.ceil(h / s) + 'px';
+    send(f, { type: 'k', k: Math.min(2.6, Math.max(1, 1 / s)).toFixed(3) });
+  }
+}
+addEventListener('resize', layout);
+addEventListener('message', e => {
+  const m = e.data; if (!m || !m.tb) return;
+  const src = frames.find(f => f.contentWindow === e.source); if (!src) return;
+  if (m.type === 'san-sang') { popw.delete(src); layout(); send(src, { type: 'ghi-chu', on: notesOn }); send(src, { type: 'moc', on: !document.body.classList.contains('an-luat') }); return; }
+  if (['chon', 'nhom', 'bo'].includes(m.type)) frames.forEach(f => send(f, m));
+  else if (m.type === 'rong' && rong.get(src) !== m.w) { rong.set(src, m.w); layout(); }
+});
+
+/* ---------- bật tắt cột: so 2 bản cạnh nhau cho dễ nhìn ---------- */
+function soCot() {
+  const n = $$('.col:not(.tat)').length;
+  cols.style.gridTemplateColumns = `repeat(${n}, minmax(0, 1fr))`;
+  requestAnimationFrame(layout);
+}
+$('#tog').addEventListener('click', e => {
+  const b = e.target.closest('.tg'); if (!b) return;
+  const on = b.getAttribute('aria-pressed') !== 'true';
+  if (!on && $$('.tg[aria-pressed="true"]').length === 1) return;      // luôn còn ít nhất 1 cột
+  b.setAttribute('aria-pressed', String(on));
+  const col = $(`.col[data-ban="${b.dataset.ban}"]`);
+  col.classList.toggle('tat', !on);
+  if (!on && col.classList.contains('big')) setFull(null);
+  soCot();
+});
+
+const bGhi = $('#b-ghi');
+bGhi.onclick = () => {
+  notesOn = !notesOn;
+  bGhi.classList.toggle('on', notesOn); bGhi.textContent = notesOn ? 'Ghi chú: bật' : 'Ghi chú: tắt';
+  frames.forEach(f => send(f, { type: 'ghi-chu', on: notesOn }));
+};
+function setFull(col) {
+  $$('.col').forEach(c => { c.classList.toggle('big', c === col); c.querySelector('.b-full').textContent = c === col ? 'Thu nhỏ' : 'Phóng to'; });
+  document.body.classList.toggle('full', !!col);
+  requestAnimationFrame(layout);
+}
+cols.addEventListener('click', e => {
+  const b = e.target.closest('.b-full'); if (!b) return;
+  const col = b.closest('.col');
+  setFull(col.classList.contains('big') ? null : col);
+});
+
+/* ---------- 2 bảng kéo lên: Cách tính và Thử order (mỗi lúc chỉ mở 1 bảng) ---------- */
+const dThu = $('#d-thu'), dCt = $('#d-ct');
+function setDrawer(d, o) {
+  for (const x of [dThu, dCt]) { const mo = x === d && o; x.classList.toggle('open', mo); x.setAttribute('aria-hidden', String(!mo)); }
+}
+$('#b-thu').onclick = () => setDrawer(dThu, !dThu.classList.contains('open'));
+$('#b-ct').onclick = () => setDrawer(dCt, !dCt.classList.contains('open'));
+$$('.b-dong').forEach(b => b.onclick = () => setDrawer(null, false));
+addEventListener('keydown', e => { if (e.key === 'Escape') { setDrawer(null, false); setFull(null); } });
+const bLuat = $('#b-luat');                           // dải công thức nằm sẵn trên trang; ẩn đi khi cần thêm chỗ cho bảng lọc
+bLuat.onclick = () => {
+  const an = document.body.classList.toggle('an-luat');
+  bLuat.classList.toggle('on', !an); bLuat.textContent = an ? 'Công thức: ẩn' : 'Công thức: hiện';
+  frames.forEach(f => send(f, { type: 'moc', on: !an }));
+  requestAnimationFrame(layout);
+};
+$('#b-chi-tiet').onclick = e => {                     // 1 nút mở cách gộp ở đầu cả 4 cột, để so ngang
+  const mo = document.body.classList.toggle('mo-ct');
+  e.currentTarget.textContent = mo ? 'Thu gọn cách làm' : 'Xem cách làm của từng cột';
+  requestAnimationFrame(layout);
+};
+
+let vd = CFG.thu_order[0], luot = vd.luot;
+function ketQua(v, n) {
+  const them = { c: 'Có giá trị riêng', t: `Bộ lọc ${v.bo_loc} dài thêm`, them: 1 }, r = {};
+  if (n >= CFG.moc) r.pa1 = r.pa2 = them;
+  else if (v.kieu === 'so-do') r.pa1 = r.pa2 = { c: v.pa1_gop ? `Gộp vào ${v.pa1_gop}` : 'Gộp với mức kề ít lượt tìm hơn' };
+  else if (v.kieu === 'moi') {
+    r.pa1 = { c: 'Có 1 giá trị mang tên dòng mới', t: 'Giá trị cùng dòng ra sau thì vào chung, không thêm nữa', them: 1 };
+    r.pa2 = { c: `Vào ${v.bo_loc} khác` };
+  } else {
+    r.pa1 = { c: v.pa1_gop ? `Vào chung ${v.pa1_gop}` : 'Gộp với giá trị cùng dòng' };
+    r.pa2 = { c: `Vào ${v.pa2_gop || v.bo_loc + ' khác'}` };
+  }
+  r.pa3 = { c: v.pa3, t: 'Không cần xét lượt tìm', them: v.pa3_them, dau: 'Màn hình đầu ' };
+  r['hien-tai'] = { c: 'Có giá trị riêng', t: 'Order giá trị nào thì tạo giá trị đó', them: 1, dau: 'Màn hình đầu ' };
+  return r;
+}
+function veThu() {
+  $('#vds').innerHTML = CFG.thu_order.map((v, i) => `<button class="vd-b${v === vd ? ' on' : ''}" data-i="${i}">${esc(v.ten)}${v.luot ? `<small>${so(v.luot)} lượt</small>` : ''}</button>`).join('');
+  $('#luot').value = Math.min(luot, 1000);
+  $('#luot-so').textContent = so(luot);
+  const du = luot >= CFG.moc, kq = $('#luot-kq');
+  kq.textContent = du ? `Đủ ${CFG.moc} lượt tìm` : `Chưa đủ ${CFG.moc} lượt tìm`; kq.className = 'kq ' + (du ? 'du' : 'chua');
+  const r = ketQua(vd, luot);
+  $('#thu-kq').innerHTML = CFG.ban.filter(b => r[b.id]).map(b => `<div class="card"><h4>${esc(b.ten)}</h4><div class="mt">${esc(b.mo_ta)}</div>
+    <div class="c">${esc(r[b.id].c)}</div><div class="t">${esc(r[b.id].t || '')}</div>
+    <span class="tag${r[b.id].them ? ' them' : ''}">${esc((r[b.id].dau || '') + (r[b.id].them ? 'thêm 1 giá trị' : 'không thêm giá trị')).replace(/^./, c => c.toUpperCase())}</span></div>`).join('');
+}
+$('#vds').addEventListener('click', e => { const b = e.target.closest('.vd-b'); if (!b) return; vd = CFG.thu_order[+b.dataset.i]; luot = vd.luot; veThu(); });
+$('#luot').addEventListener('input', e => { luot = +e.target.value; veThu(); });
+veThu();
+layout();
+</script>
+</body></html>
