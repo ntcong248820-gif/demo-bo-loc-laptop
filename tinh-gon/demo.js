@@ -1,8 +1,10 @@
 /* Demo bộ lọc 2 cấp trang /laptop (bản tinh gọn 1 cấp dùng chung file này).
  *
- * Bảng "Tất cả bộ lọc": giá trị có giá trị con thành chip ▾ (Intel ▾, Card rời ▾...). Bấm chip ▾ chỉ mở/gập
- * khung ngay dưới hàng, không lọc, không có địa chỉ. Trong khung: mỗi dòng 1 nhóm, nhãn chữ xám đầu dòng;
- * nhóm có trang riêng thì chip đầu dòng in đậm ("Tất cả card rời"). Chọn cha thì bỏ con cùng nhánh và ngược lại.
+ * Bảng "Tất cả bộ lọc": giá trị có giá trị con thành chip ▾ (Intel ▾, Card rời ▾, Từ 36 GB ▾...).
+ * Chip ▾ là giá trị lọc thật, có trang (owner chốt 12/11): bấm là chọn cả nhóm (Intel = mọi máy chip Intel) và mở khung
+ * ngay dưới hàng. Bấm thêm 1 giá trị trong khung (Core i5) thì Intel vẫn sáng, kết quả chỉ còn máy Core i5.
+ * Bỏ Core i5 thì về lại Intel. Bấm lại Intel khi khung đang mở thì bỏ chọn cả nhóm và gập khung.
+ * Khung không còn giá trị "Tất cả ..." vì chính chip ▾ đã làm việc đó.
  *
  * Đổi trang khi bấm Xem / bấm chip ✕ / bấm hàng nút nhanh: theo đúng luật web thật đo ngày 11/11.
  *  - Còn đúng 1 giá trị: sang trang của giá trị đó.
@@ -53,15 +55,13 @@
 
   /* tên nhóm không có trang ("Nhóm") chỉ là chữ hoặc chip ▾ để mở; mọi giá trị có trang là chip bấm được. */
   const isLabel = id => !(N[id].web || []).length;          // nhóm chưa có địa chỉ trên web hiện tại = chữ / chip mở; đang có địa chỉ = chip bấm được
-  const isGroupLabel = id => hasKids(id) && isLabel(id);    // chỉ áp cho nút có con; nút lá chưa có trên web (RTX 5060...) là chip mới, vẫn có trang
+  const isGroupLabel = () => false;                         // từ 12/11 mọi chip ▾ (Intel, Từ 36 GB...) là giá trị lọc thật, có trang; không còn tên nhóm chỉ để mở
   const ancestorsOf = id => { const a = []; for (let c = N[id].cha; c; c = N[c].cha) a.push(c); return a; };
-  function pick2(st, id) {                                   // chọn 1 chip trong khung: bỏ chip cha/con cùng nhánh để nghĩa luôn rõ
+  function pick2(st, id) {                                   // chọn 1 chip: chip ▾ chứa nó cùng sáng (Intel + Core i5); kết quả lấy chip sâu nhất
     if (!N[id]) return;
-    if (st.sel.includes(id)) return toggleNode(st, id);
+    if (st.sel.includes(id)) return toggleNode(st, id);       // bỏ Core i5 thì Intel vẫn chọn, về lại mọi máy Intel
     if (N[id].may.length === 0) return;
-    const drop = new Set([...ancestorsOf(id), ...descendants(id)]);
-    st.sel = st.sel.filter(x => !drop.has(x));
-    st.sel.push(id);
+    st.sel = withAncestors([...st.sel, id]);
   }
   function toggleNode(st, id) {
     if (!N[id]) return;
@@ -240,7 +240,7 @@
     return '';
   }
   function mountNoteBar() {
-    const ban = D.ban === 'tinh-gon' ? 'Demo bản tinh gọn bộ lọc hiện có (1 cấp)' : 'Demo bản 2 cấp (bấm Lọc, chip có dấu ▾ như Intel ▾ thì bấm để mở khung bên dưới)';
+    const ban = D.ban === 'tinh-gon' ? 'Demo bản tinh gọn bộ lọc hiện có (1 cấp)' : 'Demo bản 2 cấp (bấm Lọc; chip có dấu ▾ như Intel ▾: bấm là lọc cả nhóm và mở khung chọn chi tiết bên dưới)';
     const link = D.so_sanh ? `<a href="${esc(D.so_sanh)}">So sánh với bộ lọc hiện tại →</a>` : '';
     document.body.insertAdjacentHTML('afterbegin', `<div id="demo-notebar"><b>${ban}</b>
       <span class="demo-leg">So với bộ lọc hiện tại trên web: ${tagHtml({ k: 'gop', tag: 'Gộp' })} nhiều nút thành 1 ${tagHtml({ k: 'tach', tag: 'Tách' })} 1 nút thành nhiều ${tagHtml({ k: 'doi', tag: 'Đổi tên' })} ${tagHtml({ k: 'moi', tag: 'Mới' })} nút thêm mới. Nhãn nhỏ mờ ở góc nút, rê chuột vào nút để đọc chi tiết. Nút không có nhãn là giữ nguyên.</span>
@@ -281,7 +281,7 @@
       h += '<div class="flex-wrap gap-10px flex items-center">';
       st.brands.forEach(b => { const s = rest(); s.brands = s.brands.filter(x => x !== b); h += chip(D.brands[b].ten, navUrl(s)); });
       if (priceActive(st)) { const s = rest(); s.pmin = PRICE_MIN; s.pmax = PRICE_MAX; h += chip(`${money(st.pmin)} - ${money(st.pmax)}`, navUrl(s)); }
-      for (const id of deepest(st.sel)) { const s = rest(); s.sel = deepest(st.sel).filter(x => x !== id); h += chip(N[id].ten, navUrl(s)); }   // chỉ hiện chip thật, không hiện tên nhóm
+      for (const id of deepest(st.sel)) { const s = removeNode(rest(), id); h += chip(N[id].ten, navUrl(s)); }   // bỏ Core i5 thì về lại Intel
       h += `<a class="text-13 text-blue-5 shrink-0 cursor-pointer" href="${esc(urlFor(EMPTY()))}">Xóa tất cả</a></div>`;
     }
     h += '</div>';
@@ -311,9 +311,11 @@
       if (!hasKids(id)) { out += valueBtn(id, S.has(id), g.ten === 'Nhu cầu sử dụng'); continue; }
       const only = visKids(id);                                // chip ▾ chỉ còn 1 chip con có máy: hiện thẳng chip con, khỏi phải mở
       if (isLabel(id) && only.length === 1 && !hasKids(only[0])) { out += valueBtn(only[0], S.has(only[0]), false); continue; }
-      const picked = [id, ...descendants(id)].filter(x => S.has(x)).length;
+      const sub = descendants(id).filter(x => S.has(x)).length;   // số giá trị chi tiết đang chọn trong khung
+      const on = S.has(id) || sub > 0;
       const open = openExp[g.id] === id;
-      out += `<a class="${picked ? VALUE_ON : VALUE_CLS} demo-exp${open ? ' is-open' : ''}" data-pexp="${esc(g.id)}|${esc(id)}" title="Bấm để ${open ? 'gập' : 'mở'} các lựa chọn ${esc(N[id].ten)}"><span>${esc(N[id].ten)}${picked ? ` (${picked})` : ''}</span><span class="demo-chev">▾</span></a>`;
+      const tip = on && open ? 'bỏ chọn' : on ? 'mở khung' : 'lọc';
+      out += `<a class="${on ? VALUE_ON : VALUE_CLS} demo-exp${open ? ' is-open' : ''}" data-pexp="${esc(g.id)}|${esc(id)}" title="Bấm để ${tip} ${esc(N[id].ten)}"><span>${esc(N[id].ten)}${sub ? ` (${sub})` : ''}</span><span class="demo-chev">▾</span></a>`;
     }
     const o = openExp[g.id];
     if (o && ids.includes(o)) out += expPanel(o, S);
@@ -325,7 +327,6 @@
     const line = (lab, chips) => `<div class="demo-line"><span class="demo-lab">${lab ? esc(lab) : ''}</span><div class="demo-chips">${chips}</div></div>`;
     const lines = [];
     let hasLab = false;
-    if (!isLabel(id)) lines.push(line('', btn(id, 'Tất cả ' + N[id].ten.toLowerCase(), ' demo-head')));
     const leaves = [];
     for (const c of shown(id)) {
       if (!hasKids(c)) { leaves.push(c); continue; }
@@ -389,7 +390,7 @@
   }
   function openPopup() {
     pending = JSON.parse(JSON.stringify(state));
-    pending.sel = deepest(pending.sel);                       // chỉ giữ chip thật đang chọn, bỏ tên nhóm
+    pending.sel = withAncestors(deepest(pending.sel));        // Intel + Core i5: cả hai cùng sáng khi mở lại bảng
     const seen = new Set();
     for (const id of pending.sel) {                           // mở sẵn khung chứa chip đang chọn; mỗi bộ lọc 1 khung, lấy lựa chọn đầu tiên
       const top = [id, ...ancestorsOf(id)].pop(), gid = D.groups[N[top].nhom].id;
@@ -470,7 +471,13 @@
     if (t.id === 'demo-ok') return closePopup(true);
     if (t.id === 'demo-reset') { Object.assign(pending, { sel: [], brands: [], pmin: PRICE_MIN, pmax: PRICE_MAX }); return mountPopup(); }
     if (t.id === 'demo-more') { state.shown += 20; return renderGrid(); }
-    if (d.pexp) { const [gid, id] = d.pexp.split('|'); openExp[gid] = openExp[gid] === id ? null : id; justOpened = openExp[gid]; mountPopup(); justOpened = null; return; }
+    if (d.pexp) {                                             // chip ▾: chưa chọn thì chọn + mở khung; đang chọn mà khung gập thì mở; đang mở thì bỏ chọn + gập
+      const [gid, id] = d.pexp.split('|');
+      const on = pending.sel.includes(id), open = openExp[gid] === id;
+      if (on && open) { toggleNode(pending, id); openExp[gid] = null; }
+      else { if (!on) pick2(pending, id); openExp[gid] = id; justOpened = id; }
+      mountPopup(); justOpened = null; return;
+    }
     if (d.pnode) { pick2(pending, d.pnode); return mountPopup(); }
     if (d.pbrand != null && d.pbrand !== '') {
       const b = Number(d.pbrand), i = pending.brands.indexOf(b);
@@ -508,6 +515,9 @@
 
   function renderAll() { renderPageInfo(); renderBar(); renderGrid(); }
   window.addEventListener('hashchange', () => { popOpen = false; pending = null; state.shown = 20; loadQuery(); renderAll(); });
+
+  // Trang trình bày gọi hàm này để mở khung ▾ khi so cột, không chọn giá trị (bấm thật vào chip ▾ là lọc).
+  window.demoMoKhung = (gid, id) => { if (!popOpen) return; openExp[gid] = id; justOpened = id; mountPopup(); justOpened = null; };
 
   loadQuery();
   setupSort();

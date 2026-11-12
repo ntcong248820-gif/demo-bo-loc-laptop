@@ -51,7 +51,7 @@
       el.dataset.tbid = id;
       el.classList.add('tb-chip');
       if (g.m) el.dataset.tbm = g.m;
-      if (g.ma) el.insertAdjacentHTML('beforeend', `<i class="tb-ma">${g.ma}</i>`);
+      if (g.lt != null) el.insertAdjacentHTML('beforeend', `<i class="tb-ma${g.it ? ' it' : ''}">${g.lt}</i>`);   // số ở góc = lượt tìm/tháng
       if (g.anh && !el.querySelector('img')) el.insertAdjacentHTML('afterbegin', IMG(g.anh));
     }
     const wrap = b.firstElementChild;
@@ -81,7 +81,7 @@
     const y = blockPos(bl) + (frac ? frac * bl.offsetHeight : -6);
     b.scrollTo({ top: Math.max(0, y), behavior: smooth ? 'smooth' : 'auto' });
   }
-  // Mỗi cột cuộn riêng (owner chốt 11/11): cuộn tay không kéo cột khác theo. Chỉ khi bấm tên bộ lọc hay chip thì 3 cột mới cùng cuộn tới.
+  // Mỗi cột cuộn riêng (owner chốt 11/11): cuộn tay không kéo cột khác theo. Chỉ khi bấm tên bộ lọc hay chip thì các cột mới cùng cuộn tới.
   document.addEventListener('scroll', e => {
     if (e.target === pbody()) { hideHover(); placePin(); }
     else if (e.target === document) placePin();
@@ -115,7 +115,7 @@
     hideHover();
   });
 
-  /* ---------- chọn chip / bộ lọc: cả 3 cột cùng mở, cùng cuộn ---------- */
+  /* ---------- chọn chip / bộ lọc: các cột cùng mở, cùng cuộn ---------- */
   let sel = null;                                       // {keys:Set, src, id}
   function deepestMatches(keys, ten) {
     const ks = new Set(keys);
@@ -139,7 +139,10 @@
       if ($(`#demo-pbody [data-pnode="${CSS.escape(id)}"]`)) return;
       const top = topOf(id);
       const ex = $$('#demo-pbody [data-pexp]').find(x => x.dataset.pexp.endsWith('|' + top));
-      if (ex) { if (!ex.classList.contains('is-open')) { ex.click(); decorate(); } return; }
+      if (ex) {                                         // chỉ mở khung để so, không chọn: bấm chip ▾ bây giờ là lọc
+        if (!ex.classList.contains('is-open')) { const [gid, id] = ex.dataset.pexp.split('|'); window.demoMoKhung ? demoMoKhung(gid, id) : ex.click(); decorate(); }
+        return;
+      }
     }
   }
   function onChon(m) {
@@ -156,7 +159,8 @@
       const el = $(`#demo-pbody [data-tbid="${CSS.escape(firstId)}"]`);
       const bl = el.closest('[data-tbg]');
       if (bl) goTo(blockKeys(bl), 0, true);
-      pinFor = { sel: `#demo-pbody [data-tbid="${CSS.escape(firstId)}"]`, text: ghi(firstId).cau };
+      // cột vừa bấm là đang lọc: không ghim ghi chú để khỏi đè lên khung vừa mở; cột kia mới ghim
+      pinFor = mine ? null : { sel: `#demo-pbody [data-tbid="${CSS.escape(firstId)}"]`, text: ghi(firstId).cau };
     } else {
       pinFor = null;
       if (m.nhomKeys) goTo(m.nhomKeys, 0, true);
@@ -182,9 +186,10 @@
     if (!notesOn || !e.isTrusted) return;
     const h = e.target.closest('#demo-pbody [data-tbg] > p');
     if (h) { const bl = h.parentElement; return post({ type: 'nhom', keys: blockKeys(bl) }); }
+    // Bấm giá trị là lọc thật ở cột này (owner chốt 12/11), đồng thời cột kia cuộn tới giá trị tương ứng.
     const c = e.target.closest('#demo-pbody [data-pnode]');
     if (c && c.dataset.tbid) {
-      e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation();
+      if (c.className.includes('!border-blue-5')) return post({ type: 'bo' });   // đang chọn: bấm là bỏ chọn, thôi tô
       const bl = c.closest('[data-tbg]');
       return post({ type: 'chon', keys: ghi(c.dataset.tbid).k, id: c.dataset.tbid, ten: N[c.dataset.tbid].ten.toLowerCase(), nhomKeys: bl ? blockKeys(bl) : null });
     }
@@ -206,6 +211,8 @@
       trimPage(); fit(); scrollTo(0, 0);
       placePin();
     }
+    else if (m.type === 'pop') { root.style.setProperty('--popw', m.w + 'px'); fit(); placePin(); }
+    else if (m.type === 'moc') root.classList.toggle('tb-moc', !!m.on);
     else if (m.type === 'ghi-chu') { notesOn = !!m.on; root.classList.toggle('tb-on', notesOn); if (!notesOn) { hideHover(); } applySel(); placePin(); }
     else if (m.type === 'chon') onChon(m);
     else if (m.type === 'nhom') onNhom(m);
