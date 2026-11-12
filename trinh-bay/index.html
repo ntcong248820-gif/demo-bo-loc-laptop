@@ -559,6 +559,13 @@ body.qt .col[data-ban="pa3"] .lc { display: none; }
 .c10 .gap-to { font-size: 26px; font-weight: 800; color: #b45309; }
 .c10 ul { margin: 6px 0 0; padding-left: 18px; font-size: 14px; }
 .c10 .ghi { font-size: 12.5px; color: var(--mut); margin-top: 8px; }
+.vdct { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.vdct-b { border: 1px solid var(--line); border-left: 4px solid #12b76a; border-radius: 8px; padding: 7px 10px; font-size: 13px; background: #fcfffd; }
+.vdct-b.chua { border-left-color: var(--gop); background: #fffcf5; }
+.vdct-t { font-weight: 700; font-size: 13.5px; margin-bottom: 3px; }
+.vdct-b ol { margin: 0; padding-left: 18px; } .vdct-b li { margin: 2px 0; }
+.vdct-n { margin-top: 5px; padding-top: 5px; border-top: 1px dashed var(--line); color: #475467; font-size: 12.5px; }
+@media (max-width: 1500px) { .vdct { grid-template-columns: 1fr; } }
 /* sơ đồ quy trình order */
 #d-qtr { max-height: 94vh; }
 .fc-lg { display: flex; gap: 6px 14px; flex-wrap: wrap; font-size: 13px; color: #344054; margin-bottom: 12px; }
@@ -633,6 +640,18 @@ body.qt .col[data-ban="pa3"] .lc { display: none; }
   $('#d-ct .dh h3').textContent = `Vì sao mốc chia thêm ${Q.he_so}`;
   const vd = C.vd.map(v => `<tr><td>${esc(v.ten)}</td><td class="r">${so(v.lt)}</td><td class="r">${v.gap == null ? 'chưa có lượt tìm' : 'gấp ' + lan(v.gap) + ' lần'}</td>
     <td><span class="kq ${v.dat ? 'du' : 'chua'}">${v.dat ? 'Đạt mốc' : 'Dưới mốc'}</span></td></tr>`).join('');
+  /* 1 ví dụ tính từng bước: cách tỷ lệ chiếm chỗ, rồi cách tra nhanh bằng mốc, 2 cách ra cùng kết quả */
+  const pt3 = x => (x >= 1 ? x.toFixed(2) : x >= 0.1 ? x.toFixed(2) : x.toFixed(3)).replace('.', ',') + '%';
+  const vdTinh = v => {
+    if (!v) return '';
+    const cho = 100 / Q.so_gt, lt = v.lt / Q.tong * 100, gap = cho / lt, vao = gap >= Q.he_so;
+    return `<div class="vdct-b ${vao ? 'chua' : 'du'}"><div class="vdct-t">${esc(v.ten)}: ${so(v.lt)} lượt tìm/tháng</div>
+      <ol><li>% số chỗ = 1 ÷ ${Q.so_gt} = <b>${pt3(cho)}</b></li>
+        <li>% lượt tìm = ${so(v.lt)} ÷ ${so(Q.tong)} = <b>${pt3(lt)}</b></li>
+        <li>Tỷ lệ chiếm chỗ = ${pt3(cho)} ÷ ${pt3(lt)} = <b>gấp ${lan(gap)} lần</b></li>
+        <li>${vao ? `Từ ${Q.he_so} lần trở lên` : `Chưa tới ${Q.he_so} lần`}: <span class="kq ${vao ? 'chua' : 'du'}">${vao ? 'Không đáng 1 chỗ riêng' : 'Đáng 1 chỗ riêng'}</span></li></ol>
+      <div class="vdct-n">Tra nhanh bằng mốc: ${so(v.lt)} ${vao ? '<' : '≥'} ${so(Q.moc)} lượt, ra cùng kết quả</div></div>`;
+  };
   $('#ctg').className = 'c10';
   $('#ctg').innerHTML = `
     <div class="card"><h4>Mỗi giá trị chiếm 1 chỗ như nhau</h4>
@@ -648,7 +667,9 @@ body.qt .col[data-ban="pa3"] .lc { display: none; }
       <div class="cthuc" style="margin-top:12px">Đổi ra lượt tìm để tra nhanh</div>
       <ul><li>Gấp từ ${Q.he_so} lần khi lượt tìm chưa tới tổng ÷ số giá trị ÷ ${Q.he_so}</li>
         <li>${so(Q.tong)} ÷ ${Q.so_gt} ÷ ${Q.he_so} = ${so(Q.moc_tho)}, làm tròn xuống <b>${so(Q.moc)} lượt</b></li>
-        <li>Ngành hàng khác: thay tổng lượt tìm và số giá trị của ngành đó</li></ul></div>
+        <li>Ngành hàng khác: thay tổng lượt tìm và số giá trị của ngành đó</li></ul>
+      <div class="cthuc" style="margin-top:12px">Ví dụ áp công thức</div>
+      <div class="vdct">${vdTinh(C.vd.find(v => v.ten === 'RAM 24 GB'))}${vdTinh(C.vd.find(v => v.ten === 'RAM 16 GB'))}</div></div>
     <div class="card"><h4>Tính thử 5 giá trị</h4>
       <table><tr><th>Giá trị</th><th class="r">Lượt tìm</th><th class="r">Chiếm chỗ</th><th></th></tr>${vd}</table>
       <div class="ghi">Dưới mốc chưa chắc vào Khác: còn luật 5 giá trị trở xuống và luật lấy ${Q.top_n} giá trị nhiều lượt tìm nhất.</div></div>`;
