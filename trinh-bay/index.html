@@ -113,12 +113,23 @@ body:not(.mo-ct) .lc { display: none; }
 .card .t { font-size: 13.5px; color: #344054; white-space: pre-line; margin-top: 2px; }
 .card .tag { display: inline-block; margin-top: 8px; font-size: 12.5px; font-weight: 700; border-radius: 999px; padding: 3px 10px; background: #f2f4f7; color: #475467; }
 .card .tag.them { background: #fef3f2; color: #b42318; }
+.qt-form { display: flex; gap: 10px 14px; flex-wrap: wrap; margin-bottom: 12px; }
+.qt-form label { display: flex; flex-direction: column; gap: 4px; font-size: 13px; font-weight: 600; color: #344054; }
+.qt-form input, .qt-form select { font: 500 14px Inter, system-ui, sans-serif; border: 1px solid #d0d5dd; border-radius: 8px; padding: 7px 10px; min-width: 120px; background: #fff; color: var(--ink); }
+.qt-form #qt-ten { min-width: 200px; } .qt-form input[type=number] { width: 120px; min-width: 0; }
+.qt-ct { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px 20px; margin-top: 12px; font-size: 13.5px; color: #344054; }
+.qt-ct h4 { margin: 0 0 6px; font-size: 15px; color: var(--ink); } .qt-ct ol, .qt-ct ul { margin: 0; padding-left: 18px; } .qt-ct li { margin: 3px 0; } .qt-ct p { margin: 0; }
+.qt-row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-bottom: 8px; } .qt-row b { margin-right: 4px; }
+.qt-chip { border: 1px solid #abefc6; background: var(--moi-bg); border-radius: 8px; padding: 3px 8px; font-weight: 600; }
+.qt-row.khac .qt-chip { border-color: #fedf89; background: var(--gop-bg); }
+.qt-chip small { display: block; font-weight: 500; color: var(--mut); font-size: 11.5px; }
+.qt-chip.moi { outline: 2px solid var(--tim); }
 @media (prefers-reduced-motion: reduce) { .drawer { transition: none; } }
 @media (max-width: 1250px) { .ct { grid-template-columns: repeat(2, minmax(0, 1fr)); } .ctg { grid-template-columns: 1fr; } }
 @media (max-width: 900px) {
   body { overflow: auto; height: auto; } html { height: auto; }
   .cols { grid-template-columns: 1fr !important; grid-template-rows: none; gap: 8px; } .col { height: 86vh; grid-row: auto; grid-template-rows: auto minmax(0, 1fr); }
-  .cards, .ct, .ctg { grid-template-columns: 1fr; }
+  .cards, .ct, .ctg, .qt-ct { grid-template-columns: 1fr; }
   .hint { display: none; }
 }
 </style></head>
@@ -154,11 +165,13 @@ body:not(.mo-ct) .lc { display: none; }
   <div class="dh"><h3>Thử order 1 giá trị mới</h3><span class="pill">Mốc <span id="moc-3"></span> lượt tìm/tháng</span><span class="sp"></span><button class="btn b-dong">Đóng</button></div>
   <div class="vds" id="vds"></div>
   <div class="keo"><label for="luot">Lượt tìm/tháng</label><input type="range" id="luot" min="0" max="1000" step="10"><output id="luot-so" for="luot"></output><span class="kq" id="luot-kq"></span></div>
+  <div class="qt-form" id="qt-form"></div>
   <div class="cards" id="thu-kq"></div>
+  <div class="qt-ct" id="qt-ct"></div>
 </div>
 
 <script>
-const CFG = {"moc": 200, "thu_order": [{"ten": "Core Ultra X9", "luot": 40, "kieu": "ten", "bo_loc": "CPU", "pa1_gop": "Core Ultra X", "pa2_gop": "CPU khác", "pa3": "Vào Intel khác, trong khung Intel ▾", "pa3_them": false, "qt": {"cho": "khung Intel", "moc": 2049, "sp": 1, "khac": "Intel khác", "dau": false, "het": false, "top3": 390}}, {"ten": "Ryzen AI Max 300", "luot": 190, "kieu": "ten", "bo_loc": "CPU", "pa1_gop": "Ryzen AI", "pa2_gop": "CPU khác", "pa3": "Vào AMD khác, trong khung AMD ▾", "pa3_them": false, "qt": {"cho": "khung AMD", "moc": 2049, "sp": 2, "khac": "AMD khác", "dau": false, "het": false, "top3": 280}}, {"ten": "Core i5", "luot": 2070, "kieu": "ten", "bo_loc": "CPU", "pa1_gop": "", "pa2_gop": "", "pa3": "Nằm trong khung Intel ▾", "pa3_them": false, "qt": {"cho": "khung Intel", "moc": 2049, "sp": 34, "khac": "Intel khác", "dau": false, "het": false, "top3": 280}}, {"ten": "RAM 24 GB", "luot": 50, "kieu": "so-do", "bo_loc": "RAM", "pa1_gop": "24 - 32 GB", "pa2_gop": "24 - 32 GB", "pa3": "Nằm trong khung RAM khác ▾", "pa3_them": false, "qt": {"cho": "màn hình đầu bộ lọc RAM", "moc": 2049, "sp": 16, "khac": "RAM khác", "dau": true, "het": false, "top3": 330}}, {"ten": "CPU dòng mới của Intel", "luot": 0, "kieu": "moi", "bo_loc": "CPU", "pa1_gop": "", "pa2_gop": "", "pa3": "Nằm trong khung Intel ▾", "pa3_them": false, "qt": {"cho": "khung Intel", "moc": 2049, "sp": null, "khac": "Intel khác", "dau": false, "het": false, "top3": 390}}, {"ten": "Tiện ích mới", "luot": 0, "kieu": "moi", "bo_loc": "Tiện ích", "pa1_gop": "", "pa2_gop": "", "pa3": "Hiện thẳng ở màn hình đầu", "pa3_them": true, "qt": {"cho": "màn hình đầu bộ lọc Tiện ích", "moc": 2049, "sp": null, "khac": "Tiện ích khác", "dau": true, "het": false, "top3": 180}}], "ct": {"he_so": 10, "tong": 173540, "so_gt": 85, "chia_deu": 2042, "moc_tho": 204, "pt_cho_1": "1,18%", "duoi": 43, "duoi_luot": 2370, "pt_cho": 51, "pt_luot_so": 1.37, "pt_luot": "1,4", "gap_nhom": 37, "vd": [{"ten": "Gaming", "luot": 60080, "pt_luot": "34,6%", "gap": "0,03", "gop": false}, {"ten": "RAM 16 GB", "luot": 790, "pt_luot": "0,46%", "gap": "2,6", "gop": false}, {"ten": "SSD 256 GB", "luot": 130, "pt_luot": "0,075%", "gap": "16", "gop": true}, {"ten": "RAM 24 GB", "luot": 50, "pt_luot": "0,029%", "gap": "41", "gop": true}, {"ten": "240 Hz", "luot": 40, "pt_luot": "0,023%", "gap": "51", "gop": true}], "vd_buoc": 3}, "ban": [{"id": "hien-tai", "ten": "Hiện tại", "mo_ta": "Web đang chạy", "cau": "", "luat": {"ap": "chua", "the": "Chưa có rule", "tieu_de": "Order giá trị nào thì tạo giá trị đó", "y": [], "luu": ""}, "bo_loc": 15, "dau": 85, "khung": 0}, {"id": "pa3", "ten": "Phương án 2 cấp", "mo_ta": "Theo quy trình mới", "cau": "Cần IT làm khung xổ ▾", "luat": {"ap": "co", "the": "Theo quy trình mới", "tieu_de": "Gom theo cụm, mỗi chỗ một mốc, còn lại vào Khác", "y": [["Thuộc tính hiện khi có từ 200 lượt tìm và từ 3 máy, xếp theo lượt tìm cao xuống thấp", ""], ["Có từ 2 cụm (mỗi cụm từ 2 giá trị) và từ 6 giá trị thì gom thành nút ▾", "Intel ▾, AMD ▾, Qualcomm ▾"], ["Giá trị dưới 3 máy vào Khác", "Core i9, RTX 4060"], ["Từ 5 giá trị trở xuống thì hiện hết. Nhiều hơn: hiện giá trị đạt mốc chung (ít nhất 3 giá trị cao nhất), còn lại vào Khác", ""], ["Mốc chung = tổng lượt tìm cả bộ lọc (không tính Thương hiệu) ÷ tổng số giá trị = 174.130 ÷ 85 = 2.049 lượt", ""], ["Giá trị xếp A → Z", ""]], "luu": "Cả trang dùng 1 mốc chung, ở màn hình đầu lẫn trong khung ▾"}, "bo_loc": 11, "dau": 47, "khung": 33}]};
+const CFG = {"moc": 200, "thu_order": [{"ten": "Core Ultra X9", "luot": 40, "kieu": "ten", "bo_loc": "CPU", "pa1_gop": "Core Ultra X", "pa2_gop": "CPU khác", "pa3": "Vào Intel khác, trong khung Intel ▾", "pa3_them": false, "qt": {"cho": "khung Intel", "moc": 2049, "sp": 1, "khac": "Intel khác", "dau": false, "het": false, "top3": 390}, "qt_form": {"ten": "Ultra X9", "bo_loc": "CPU", "cho": "khung Intel", "lt": 40, "sp": 1}}, {"ten": "Ryzen AI Max 300", "luot": 190, "kieu": "ten", "bo_loc": "CPU", "pa1_gop": "Ryzen AI", "pa2_gop": "CPU khác", "pa3": "Vào AMD khác, trong khung AMD ▾", "pa3_them": false, "qt": {"cho": "khung AMD", "moc": 2049, "sp": 2, "khac": "AMD khác", "dau": false, "het": false, "top3": 280}, "qt_form": {"ten": "Ryzen AI Max 300", "bo_loc": "CPU", "cho": "khung AMD", "lt": 190, "sp": 2}}, {"ten": "Core i5", "luot": 2070, "kieu": "ten", "bo_loc": "CPU", "pa1_gop": "", "pa2_gop": "", "pa3": "Nằm trong khung Intel ▾", "pa3_them": false, "qt": {"cho": "khung Intel", "moc": 2049, "sp": 34, "khac": "Intel khác", "dau": false, "het": false, "top3": 280}, "qt_form": {"ten": "Core i5", "bo_loc": "CPU", "cho": "khung Intel", "lt": 2070, "sp": 34}}, {"ten": "RAM 24 GB", "luot": 50, "kieu": "so-do", "bo_loc": "RAM", "pa1_gop": "24 - 32 GB", "pa2_gop": "24 - 32 GB", "pa3": "Nằm trong khung RAM khác ▾", "pa3_them": false, "qt": {"cho": "màn hình đầu bộ lọc RAM", "moc": 2049, "sp": 16, "khac": "RAM khác", "dau": true, "het": false, "top3": 330}, "qt_form": {"ten": "24 GB", "bo_loc": "RAM", "cho": "dau", "lt": 50, "sp": 16}}, {"ten": "CPU dòng mới của Intel", "luot": 0, "kieu": "moi", "bo_loc": "CPU", "pa1_gop": "", "pa2_gop": "", "pa3": "Nằm trong khung Intel ▾", "pa3_them": false, "qt": {"cho": "khung Intel", "moc": 2049, "sp": null, "khac": "Intel khác", "dau": false, "het": false, "top3": 390}, "qt_form": {"ten": "CPU Intel mới", "bo_loc": "CPU", "cho": "khung Intel", "lt": 0, "sp": 5}}, {"ten": "Tiện ích mới", "luot": 0, "kieu": "moi", "bo_loc": "Tiện ích", "pa1_gop": "", "pa2_gop": "", "pa3": "Hiện thẳng ở màn hình đầu", "pa3_them": true, "qt": {"cho": "màn hình đầu bộ lọc Tiện ích", "moc": 2049, "sp": null, "khac": "Tiện ích khác", "dau": true, "het": false, "top3": 180}, "qt_form": {"ten": "Tiện ích mới", "bo_loc": "Tiện ích", "cho": "dau", "lt": 0, "sp": 5}}], "ct": {"he_so": 10, "tong": 173540, "so_gt": 85, "chia_deu": 2042, "moc_tho": 204, "pt_cho_1": "1,18%", "duoi": 43, "duoi_luot": 2370, "pt_cho": 51, "pt_luot_so": 1.37, "pt_luot": "1,4", "gap_nhom": 37, "vd": [{"ten": "Gaming", "luot": 60080, "pt_luot": "34,6%", "gap": "0,03", "gop": false}, {"ten": "RAM 16 GB", "luot": 790, "pt_luot": "0,46%", "gap": "2,6", "gop": false}, {"ten": "SSD 256 GB", "luot": 130, "pt_luot": "0,075%", "gap": "16", "gop": true}, {"ten": "RAM 24 GB", "luot": 50, "pt_luot": "0,029%", "gap": "41", "gop": true}, {"ten": "240 Hz", "luot": 40, "pt_luot": "0,023%", "gap": "51", "gop": true}], "vd_buoc": 3}, "qt": {"tong": 174130, "so_gt": 85, "moc": 2049, "sp_min": 3, "max_het": 5, "top_n": 3, "moc_tt": 200, "bo_loc": [{"ten": "Nhu cầu sử dụng", "cho": [{"id": "dau", "ten": "Màn hình đầu", "ten_khac": "Nhu cầu sử dụng khác", "items": [{"ten": "Gaming", "lt": 60080, "sp": 109}, {"ten": "Văn phòng", "lt": 14410, "sp": 333}, {"ten": "Sinh viên", "lt": 12810, "sp": 333}, {"ten": "Mỏng nhẹ", "lt": 8820, "sp": 124}, {"ten": "Đồ hoạ", "lt": 4910, "sp": 69}, {"ten": "Kỹ thuật", "lt": 4350, "sp": 88}, {"ten": "Laptop AI", "lt": 2600, "sp": 181}, {"ten": "Cao cấp", "lt": 1490, "sp": 198}]}]}, {"ten": "Kích thước màn hình", "cho": [{"id": "dau", "ten": "Màn hình đầu", "ten_khac": "Kích thước màn hình khác", "items": [{"ten": "Dưới 14 inch", "lt": 5680, "sp": 19}, {"ten": "Từ 14 - 15 inch", "lt": 3720, "sp": 157}, {"ten": "Từ 15 - 16 inch", "lt": 4600, "sp": 154}, {"ten": "Trên 16 inch", "lt": 2010, "sp": 77}]}]}, {"ten": "Khoảng giá", "cho": [{"id": "dau", "ten": "Màn hình đầu", "ten_khac": "Khoảng giá khác", "items": [{"ten": "15 - 20 triệu", "lt": 4920, "sp": 27}, {"ten": "20 - 25 triệu", "lt": 5000, "sp": 88}, {"ten": "25 - 30 triệu", "lt": 620, "sp": 101}, {"ten": "Trên 30 triệu", "lt": 1110, "sp": 236}, {"ten": "10 - 15 triệu", "lt": 4090, "sp": 2}]}]}, {"ten": "CPU", "cho": [{"id": "dau", "ten": "Màn hình đầu", "ten_khac": "CPU khác", "items": [{"ten": "Intel", "lt": 7980, "sp": 321, "cum": 1}, {"ten": "AMD", "lt": 1520, "sp": 89, "cum": 1}, {"ten": "Qualcomm", "lt": 560, "sp": 8, "cum": 1}, {"ten": "RTX Spark", "lt": 480, "sp": 7}]}, {"id": "khung Intel", "ten": "Trong khung Intel ▾", "ten_khac": "Intel khác", "items": [{"ten": "Core i5", "lt": 2070, "sp": 34}, {"ten": "Core i7", "lt": 2760, "sp": 41}, {"ten": "Ultra 7", "lt": 390, "sp": 59}, {"ten": "Ultra 5", "lt": 280, "sp": 54}, {"ten": "Ultra 9", "lt": 270, "sp": 17}, {"ten": "Ultra X7", "lt": 120, "sp": 5}, {"ten": "Ultra X9", "lt": 40, "sp": 1}, {"ten": "Core i3", "lt": 450, "sp": 1}, {"ten": "Core i9", "lt": 1510, "sp": 1}, {"ten": "Core 3", "lt": 20, "sp": 15}, {"ten": "Core 5", "lt": 40, "sp": 59}, {"ten": "Core 7", "lt": 30, "sp": 34}, {"ten": "Core 9", "lt": 0, "sp": 1}]}, {"id": "khung AMD", "ten": "Trong khung AMD ▾", "ten_khac": "AMD khác", "items": [{"ten": "Ryzen 5", "lt": 320, "sp": 32}, {"ten": "Ryzen 7", "lt": 570, "sp": 40}, {"ten": "Ryzen 9", "lt": 280, "sp": 9}, {"ten": "Ryzen 3", "lt": 10, "sp": 3}, {"ten": "Ryzen AI 200", "lt": 0, "sp": 5}, {"ten": "Ryzen AI 300", "lt": 150, "sp": 17}, {"ten": "Ryzen AI 400", "lt": 0, "sp": 7}, {"ten": "Ryzen AI Max 300", "lt": 190, "sp": 2}]}, {"id": "khung Qualcomm", "ten": "Trong khung Qualcomm ▾", "ten_khac": "Qualcomm khác", "items": [{"ten": "Snapdragon X", "lt": 360, "sp": 4}, {"ten": "Snapdragon X Elite", "lt": 150, "sp": 3}, {"ten": "Snapdragon X Plus", "lt": 50, "sp": 1}]}]}, {"ten": "Card đồ hoạ", "cho": [{"id": "dau", "ten": "Màn hình đầu", "ten_khac": "Card đồ hoạ khác", "items": [{"ten": "Card rời", "lt": 5390, "sp": 111}, {"ten": "RTX 3050", "lt": 1000, "sp": 25}, {"ten": "RTX 5060", "lt": 940, "sp": 24}, {"ten": "Card tích hợp", "lt": 30, "sp": 336}, {"ten": "RTX 4050", "lt": 630, "sp": 20}, {"ten": "RTX 4060", "lt": 1150, "sp": 1}, {"ten": "RTX 5050", "lt": 560, "sp": 27}, {"ten": "RTX 5070", "lt": 600, "sp": 9}]}]}, {"ten": "Tiện ích", "cho": [{"id": "dau", "ten": "Màn hình đầu", "ten_khac": "Tiện ích khác", "items": [{"ten": "Cảm ứng", "lt": 3980, "sp": 51}, {"ten": "Gập 360 độ", "lt": 2300, "sp": 17}, {"ten": "Có đèn bàn phím", "lt": 180, "sp": 275}, {"ten": "Bảo mật khuôn mặt", "lt": 0, "sp": 138}, {"ten": "Bảo mật vân tay", "lt": 10, "sp": 91}, {"ten": "Có bàn phím số", "lt": 150, "sp": 8}]}]}, {"ten": "RAM", "cho": [{"id": "dau", "ten": "Màn hình đầu", "ten_khac": "RAM khác", "items": [{"ten": "16 GB", "lt": 790, "sp": 307}, {"ten": "32 GB", "lt": 780, "sp": 56}, {"ten": "8 GB", "lt": 330, "sp": 45}, {"ten": "12 GB", "lt": 30, "sp": 3}, {"ten": "24 GB", "lt": 50, "sp": 16}, {"ten": "36 GB", "lt": 0, "sp": 3}, {"ten": "48 GB", "lt": 0, "sp": 5}, {"ten": "64 GB", "lt": 180, "sp": 6}, {"ten": "128 GB", "lt": 30, "sp": 2}, {"ten": "192 GB", "lt": 0, "sp": 1}]}]}, {"ten": "Độ phân giải", "cho": [{"id": "dau", "ten": "Màn hình đầu", "ten_khac": "Độ phân giải khác", "items": [{"ten": "Full HD", "lt": 210, "sp": 334}, {"ten": "2K - 3K", "lt": 190, "sp": 79}, {"ten": "4K", "lt": 720, "sp": 7}]}]}, {"ten": "Ổ cứng", "cho": [{"id": "dau", "ten": "Màn hình đầu", "ten_khac": "Ổ cứng khác", "items": [{"ten": "SSD 1 TB", "lt": 570, "sp": 88}, {"ten": "SSD 512 GB", "lt": 350, "sp": 328}, {"ten": "SSD 256 GB", "lt": 130, "sp": 5}, {"ten": "SSD 2 TB", "lt": 60, "sp": 10}, {"ten": "SSD 3 TB", "lt": 0, "sp": 1}, {"ten": "SSD 6 TB", "lt": 0, "sp": 1}]}]}, {"ten": "Công nghệ màn hình", "cho": [{"id": "dau", "ten": "Màn hình đầu", "ten_khac": "Công nghệ màn hình khác", "items": [{"ten": "Màn hình OLED", "lt": 490, "sp": 79}, {"ten": "100% sRGB", "lt": 90, "sp": 68}, {"ten": "Chống chói", "lt": 20, "sp": 223}]}]}, {"ten": "Tần số quét", "cho": [{"id": "dau", "ten": "Màn hình đầu", "ten_khac": "Tần số quét khác", "items": [{"ten": "90 - 120 Hz", "lt": 220, "sp": 84}, {"ten": "144 - 165 Hz", "lt": 170, "sp": 73}, {"ten": "240 Hz", "lt": 40, "sp": 6}, {"ten": "180 Hz", "lt": 0, "sp": 14}, {"ten": "250 Hz", "lt": 0, "sp": 1}, {"ten": "300 Hz", "lt": 0, "sp": 2}, {"ten": "Dưới 90 Hz", "lt": 0, "sp": 273}]}]}]}, "ban": [{"id": "hien-tai", "ten": "Hiện tại", "mo_ta": "Web đang chạy", "cau": "", "luat": {"ap": "chua", "the": "Chưa có rule", "tieu_de": "Order giá trị nào thì tạo giá trị đó", "y": [], "luu": ""}, "bo_loc": 15, "dau": 85, "khung": 0}, {"id": "pa3", "ten": "Phương án 2 cấp", "mo_ta": "Theo quy trình mới", "cau": "Cần IT làm khung xổ ▾", "luat": {"ap": "co", "the": "Theo quy trình mới", "tieu_de": "Gom theo cụm, mỗi chỗ một mốc, còn lại vào Khác", "y": [["Thuộc tính hiện khi có từ 200 lượt tìm và từ 3 máy, xếp theo lượt tìm cao xuống thấp", ""], ["Có từ 2 cụm (mỗi cụm từ 2 giá trị) và từ 6 giá trị thì gom thành nút ▾", "Intel ▾, AMD ▾, Qualcomm ▾"], ["Giá trị dưới 3 máy vào Khác", "Core i9, RTX 4060"], ["Từ 5 giá trị trở xuống thì hiện hết. Nhiều hơn: hiện giá trị đạt mốc chung (ít nhất 3 giá trị cao nhất), còn lại vào Khác", ""], ["Mốc chung = tổng lượt tìm cả bộ lọc (không tính Thương hiệu) ÷ tổng số giá trị = 174.130 ÷ 85 = 2.049 lượt", ""], ["Giá trị xếp A → Z", ""]], "luu": "Cả trang dùng 1 mốc chung, ở màn hình đầu lẫn trong khung ▾"}, "bo_loc": 11, "dau": 47, "khung": 33}]};
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const so = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
@@ -336,7 +349,141 @@ function veThu() {
 }
 $('#vds').addEventListener('click', e => { const b = e.target.closest('.vd-b'); if (!b) return; vd = CFG.thu_order[+b.dataset.i]; luot = vd.luot; veThu(); });
 $('#luot').addEventListener('input', e => { luot = +e.target.value; veThu(); });
-veThu();
+/* Thử order tự điền cho trang so sánh (bản theo tab Quy_Trình). build-trinh-bay-3-ban.py chèn file này vào trang.
+ * Người xem gõ tên giá trị, chọn thuộc tính, chỗ nằm (màn hình đầu hay khung ▾), lượt tìm, số máy.
+ * Trang tính lại đúng luật: mốc chung = tổng lượt tìm cả bộ lọc ÷ tổng số giá trị (cộng cả giá trị vừa gõ);
+ * dưới 3 máy vào Khác; chỗ có từ 5 giá trị trở xuống thì hiện hết; nhiều hơn thì hiện giá trị đạt mốc,
+ * chưa đủ 3 giá trị đạt mốc thì lấy 3 giá trị nhiều lượt tìm nhất; Khác chỉ lập khi có từ 2 giá trị.
+ * Gõ trùng tên 1 giá trị đang có ở đúng chỗ đó thì thay số của giá trị đó (thử "nếu giá trị này có số khác").
+ * Dùng CFG.qt (dữ liệu từng chỗ) và các hàm $, $$, esc, so của trang ngoài. */
+function initQT() {
+  const Q = CFG.qt, CHO = {};
+  const TEN_PA3 = (CFG.ban.find(b => b.id === 'pa3') || {}).ten || 'Phương án 2 cấp';
+  Q.bo_loc.forEach(b => b.cho.forEach(c => { CHO[b.ten + '|' + c.id] = Object.assign({ bo_loc: b.ten }, c); }));
+  const norm = s => s.trim().toLowerCase();
+  const thuong = s => s.charAt(0).toLowerCase() + s.slice(1);   // "Trong khung AMD ▾" -> "trong khung AMD ▾"
+
+  function b21(items, moc) {                          // {tên: {k: 'hien' | 'khac', ly}}
+    const out = {}, n = items.length, du = items.filter(x => x.sp >= Q.sp_min);
+    items.filter(x => x.sp < Q.sp_min).forEach(x => { out[x.ten] = { k: 'khac', ly: `Chỉ ${x.sp} máy (dưới ${Q.sp_min})` }; });
+    if (n <= Q.max_het) {
+      du.forEach(x => { out[x.ten] = { k: 'hien', ly: `Chỗ này có ${n} giá trị (từ ${Q.max_het} trở xuống) nên hiện hết` }; });
+    } else {
+      const dat = du.filter(x => x.lt >= moc);
+      if (dat.length >= Q.top_n) {
+        du.forEach(x => { out[x.ten] = x.lt >= moc ? { k: 'hien', ly: `Đạt mốc chung ${so(moc)} lượt` } : { k: 'khac', ly: `Chưa đạt mốc chung ${so(moc)} lượt` }; });
+      } else {
+        const top = [...du].sort((a, b) => b.lt - a.lt).slice(0, Q.top_n);
+        du.forEach(x => {
+          out[x.ten] = top.includes(x)
+            ? { k: 'hien', ly: (x.lt >= moc ? `Đạt mốc chung ${so(moc)} lượt` : `Chưa đạt mốc chung ${so(moc)} lượt`) +
+                `, nằm trong ${Q.top_n} giá trị nhiều lượt tìm nhất (chỉ ${dat.length} giá trị đạt mốc)` }
+            : { k: 'khac', ly: `Chưa đạt mốc chung ${so(moc)} lượt, không nằm trong ${Q.top_n} giá trị nhiều lượt tìm nhất` };
+        });
+      }
+    }
+    const khac = items.filter(x => out[x.ten].k === 'khac');
+    if (khac.length === 1) { const o = out[khac[0].ten]; o.k = 'hien'; o.ly += ', nhưng chỉ 1 giá trị phải vào Khác nên hiện luôn'; }
+    return out;
+  }
+
+  function tinh(f) {
+    const moi = f.bo_loc === '__moi__', key = f.bo_loc + '|' + f.cho;
+    const cu = moi ? null : (CHO[key].items.find(x => !x.cum && norm(x.ten) === norm(f.ten)) || null);
+    const tong = Q.tong - (cu ? cu.lt : 0) + f.lt, soGt = Q.so_gt + (cu ? 0 : 1), moc = Math.round(tong / soGt);
+    const r = { buoc: [`Mốc chung = ${so(tong)} lượt ÷ ${so(soGt)} giá trị = ${so(moc)} lượt` +
+      (cu ? ` (thay số đang có của ${cu.ten}: ${so(cu.lt)} lượt, ${cu.sp} máy)` : ' (đã cộng giá trị vừa gõ)')], anh: [] };
+    const truoc = {}, sau = {};
+    for (const k in CHO) {
+      truoc[k] = b21(CHO[k].items, Q.moc);
+      const items = k === key ? CHO[k].items.filter(x => x !== cu).concat([{ ten: f.ten, lt: f.lt, sp: f.sp, moi: 1 }]) : CHO[k].items;
+      sau[k] = { items, kq: b21(items, moc) };
+    }
+    if (moi) {
+      const ok = f.lt >= Q.moc_tt && f.sp >= Q.sp_min;
+      r.buoc.push(`Thuộc tính mới cần từ ${so(Q.moc_tt)} lượt tìm và từ ${Q.sp_min} máy: ${ok ? 'đủ, được tạo' : 'chưa đủ, chưa tạo'}`);
+      if (ok) r.buoc.push(`Thuộc tính chỉ có 1 giá trị (từ ${Q.max_het} trở xuống) nên giá trị hiện luôn`);
+      r.ket = ok ? { c: `Tạo thuộc tính mới, hiện ${f.ten}`, them: 1 } : { c: 'Chưa tạo thuộc tính mới', them: 0 };
+      r.dau = 'Màn hình đầu ';
+    } else {
+      const c = CHO[key], s = sau[key], o = s.kq[f.ten], n = s.items.length;
+      const dat = s.items.filter(x => x.sp >= Q.sp_min && x.lt >= moc).length;
+      r.buoc.push(`Số máy: ${f.sp} máy, ${f.sp >= Q.sp_min ? 'đủ' : 'dưới'} ${Q.sp_min} máy`);
+      r.buoc.push(n <= Q.max_het
+        ? `${c.ten} có ${n} giá trị (từ ${Q.max_het} trở xuống): hiện hết giá trị từ ${Q.sp_min} máy`
+        : `${c.ten} có ${n} giá trị (trên ${Q.max_het}): ${dat} giá trị đạt mốc ${so(moc)} lượt` +
+          (dat < Q.top_n ? `, chưa đủ ${Q.top_n} nên lấy ${Q.top_n} giá trị nhiều lượt tìm nhất` : ''));
+      r.buoc.push(`${f.ten}: ${o.ly}`);
+      r.ket = o.k === 'hien' ? { c: c.id === 'dau' ? 'Hiện riêng ở màn hình đầu' : `Hiện riêng ${thuong(c.ten)}`, them: 1 } : { c: `Vào ${c.ten_khac}`, them: 0 };
+      if (o.k !== 'hien') r.buoc.push('Ngành hàng vẫn muốn hiện: SEO xác nhận lại. Vẫn muốn thì hiện thử 1 tháng, dưới 300 lượt truy cập thì bỏ hoặc gộp');
+      r.dau = c.id === 'dau' ? 'Màn hình đầu ' : 'Trong khung ';
+      r.cho = { ten: c.ten, ten_khac: c.ten_khac, hien: s.items.filter(x => s.kq[x.ten].k === 'hien'), khac: s.items.filter(x => s.kq[x.ten].k === 'khac') };
+    }
+    for (const k in CHO) for (const x of CHO[k].items) {          // giá trị khác đổi kết quả (bị chen khỏi 3 giá trị cao nhất, mốc chung đổi...)
+      if (x === cu) continue;
+      const a = truoc[k][x.ten], b = sau[k].kq[x.ten];
+      if (a && b && a.k !== b.k) {
+        const noi = `${thuong(CHO[k].ten)} bộ lọc ${CHO[k].bo_loc}`;
+        r.anh.push(`${x.ten} (${noi}): ${a.k === 'hien' ? 'đang hiện riêng' : 'đang ở ' + CHO[k].ten_khac}, nay ${b.k === 'hien' ? 'hiện riêng' : 'vào ' + CHO[k].ten_khac}`);
+      }
+    }
+    return r;
+  }
+
+  const F = $('#qt-form'), el = id => document.getElementById(id);
+  F.innerHTML = `<label>Tên giá trị<input id="qt-ten" type="text" value="Giá trị mới"></label>
+    <label>Thuộc tính<select id="qt-bl">${Q.bo_loc.map(b => `<option>${esc(b.ten)}</option>`).join('')}<option value="__moi__">Thuộc tính mới</option></select></label>
+    <label>Nằm ở<select id="qt-cho"></select></label>
+    <label>Lượt tìm/tháng<input id="qt-lt" type="number" min="0" step="10" value="500"></label>
+    <label>Số máy<input id="qt-sp" type="number" min="0" step="1" value="5"></label>`;
+  function veCho() {
+    const b = Q.bo_loc.find(x => x.ten === el('qt-bl').value);
+    el('qt-cho').innerHTML = b ? b.cho.map(c => `<option value="${esc(c.id)}">${esc(c.ten)}</option>`).join('') : '<option value="dau">Màn hình đầu</option>';
+    el('qt-cho').disabled = !b;
+  }
+  const doc = () => ({ ten: el('qt-ten').value.trim() || 'Giá trị mới', bo_loc: el('qt-bl').value, cho: el('qt-cho').value,
+    lt: Math.max(0, Math.round(+el('qt-lt').value || 0)), sp: Math.max(0, Math.round(+el('qt-sp').value || 0)) });
+  const chip = x => `<span class="qt-chip${x.moi ? ' moi' : ''}">${esc(x.ten)}<small>${so(x.lt)} lượt, ${x.sp} máy</small></span>`;
+  function ve() {
+    const f = doc(), r = tinh(f), rg = $('#luot');
+    rg.max = Math.max(5000, f.lt); rg.value = f.lt; $('#luot-so').textContent = so(f.lt);
+    const kq = $('#luot-kq');
+    kq.textContent = r.ket.them ? 'Được hiện riêng' : 'Không hiện riêng'; kq.className = 'kq ' + (r.ket.them ? 'du' : 'chua');
+    $('#thu-kq').innerHTML = `<div class="card"><h4>Hiện tại</h4><div class="mt">Web đang chạy</div><div class="c">Có giá trị riêng</div>
+      <div class="t">Order giá trị nào thì tạo giá trị đó</div><span class="tag them">Màn hình đầu thêm 1 giá trị</span></div>
+      <div class="card"><h4>${esc(TEN_PA3)}</h4><div class="mt">Theo quy trình mới</div><div class="c">${esc(r.ket.c)}</div>
+      <div class="t">${esc(f.ten)}: ${so(f.lt)} lượt tìm, ${f.sp} máy</div>
+      <span class="tag${r.ket.them ? ' them' : ''}">${esc(r.dau + (r.ket.them ? 'thêm 1 giá trị' : 'không thêm giá trị'))}</span></div>`;
+    let h = `<div><h4>Cách tính</h4><ol>${r.buoc.map(x => `<li>${esc(x)}</li>`).join('')}</ol></div>`;
+    if (r.cho) {
+      h += `<div><h4>${esc(r.cho.ten)} sau khi thêm</h4><div class="qt-row"><b>Hiện riêng</b>${r.cho.hien.map(chip).join('')}</div>` +
+        (r.cho.khac.length ? `<div class="qt-row khac"><b>${esc(r.cho.ten_khac)}</b>${r.cho.khac.map(chip).join('')}</div>` : '<div class="qt-row"><b>Không có nhóm Khác</b></div>') + '</div>';
+    }
+    h += `<div><h4>Giá trị khác bị ảnh hưởng</h4>` + (r.anh.length ? `<ul>${r.anh.map(x => `<li>${esc(x)}</li>`).join('')}</ul>` : '<p>Không giá trị nào đổi kết quả.</p>') + '</div>';
+    $('#qt-ct').innerHTML = h;
+    const key = JSON.stringify(f);
+    $$('#vds .vd-b').forEach(b => b.classList.toggle('on', JSON.stringify(CFG.thu_order[+b.dataset.i].qt_form) === key));
+  }
+  const vds = $('#vds'), moiVds = vds.cloneNode(false);        // thay nút ví dụ cũ (bỏ hết sự kiện cũ)
+  vds.replaceWith(moiVds);
+  moiVds.innerHTML = CFG.thu_order.filter(v => v.qt_form).map(v => `<button class="vd-b" data-i="${CFG.thu_order.indexOf(v)}">${esc(v.ten)}${v.luot ? `<small>${so(v.luot)} lượt</small>` : ''}</button>`).join('');
+  moiVds.addEventListener('click', e => {
+    const b = e.target.closest('.vd-b'); if (!b) return;
+    const q = CFG.thu_order[+b.dataset.i].qt_form;
+    el('qt-ten').value = q.ten; el('qt-bl').value = q.bo_loc; veCho(); el('qt-cho').value = q.cho; el('qt-lt').value = q.lt; el('qt-sp').value = q.sp;
+    ve();
+  });
+  const rg = $('#luot'), moiRg = rg.cloneNode(true);
+  rg.replaceWith(moiRg);
+  moiRg.addEventListener('input', e => { el('qt-lt').value = e.target.value; ve(); });
+  el('qt-bl').addEventListener('change', () => { veCho(); ve(); });
+  ['qt-cho', 'qt-ten', 'qt-lt', 'qt-sp'].forEach(id => el(id).addEventListener('input', ve));
+  el('qt-cho').addEventListener('change', ve);
+  veCho();
+  ve();
+}
+
+if (CFG.qt) initQT(); else veThu();
 layout();
 </script>
 </body></html>

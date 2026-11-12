@@ -323,7 +323,7 @@
       const on = S.has(id) || sub > 0;
       const open = openExp[g.id] === id;
       const tip = on && open ? 'bỏ chọn' : on ? 'mở khung' : 'lọc';
-      out += `<a class="${on ? VALUE_ON : VALUE_CLS} demo-exp${open ? ' is-open' : ''}" data-pexp="${esc(g.id)}|${esc(id)}" title="Bấm để ${tip} ${esc(N[id].ten)}"><span>${esc(N[id].ten)}${sub ? ` (${sub})` : ''}</span><span class="demo-chev">▾</span></a>`;
+      out += `<a class="${on ? VALUE_ON : VALUE_CLS} demo-exp${open ? ' is-open' : ''}${on ? ' is-on' : ''}" data-pexp="${esc(g.id)}|${esc(id)}" title="Bấm để ${tip} ${esc(N[id].ten)}"><span>${esc(N[id].ten)}${sub ? ` (${sub})` : ''}</span><span class="demo-chev">▾</span></a>`;
     }
     const o = openExp[g.id];
     if (o && ids.includes(o)) out += expPanel(o, S);
@@ -343,7 +343,11 @@
     }
     if (leaves.length) lines.push(line('', leaves.map(x => btn(x)).join('')));
     const anim = justOpened === id ? ' is-opening' : '';
-    return `<div class="demo-panel${hasLab ? '' : ' no-lab'}${anim}">${lines.join('')}</div>`;
+    const nLa = descendants(id).filter(x => !hasKids(x) && (visible(x) || S.has(x))).length;
+    const dangChon = S.has(id) || descendants(id).some(x => S.has(x));
+    const head = `<div class="demo-phead"><b>${esc(N[id].ten)}</b><span>${nLa} lựa chọn chi tiết</span>` +
+      `<span class="demo-phint">${dangChon ? 'Bấm 1 lựa chọn để lọc chi tiết hơn' : 'Bấm 1 lựa chọn để lọc'}</span></div>`;
+    return `<div class="demo-panel${hasLab ? '' : ' no-lab'}${anim}" data-cha="${esc(id)}"><i class="demo-notch"></i>${head}${lines.join('')}</div>`;
   }
   function pickedRow(st) {                                   // hàng "Đã chọn" đầu bảng Lọc như web thật: chip ▾ gập lại vẫn thấy đã chọn gì
     const ids = deepest(st.sel);
@@ -394,7 +398,16 @@
     const top = body.scrollTop;
     body.innerHTML = popupBody(pending);
     body.scrollTop = top;
+    placeNotches(body);
     $('#demo-pfoot').innerHTML = popupFoot();
+  }
+  function placeNotches(root) {                              // mũi tên đầu khung chỉ đúng vào chip ▾ đang mở
+    root.querySelectorAll('.demo-panel').forEach(p => {
+      const row = p.parentElement, chip = row && row.querySelector('.demo-exp.is-open');
+      if (!chip) return;
+      const x = chip.getBoundingClientRect().left + chip.offsetWidth / 2 - p.getBoundingClientRect().left;
+      p.style.setProperty('--nx', Math.max(16, x) + 'px');
+    });
   }
   function openPopup() {
     pending = JSON.parse(JSON.stringify(state));

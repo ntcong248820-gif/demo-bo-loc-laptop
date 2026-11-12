@@ -43,19 +43,33 @@ body.demo-hide-notes #demo-filter-root .demo-corner, body.demo-hide-notes #demo-
 .demo-pi-ok { color: #067647; } .demo-pi-no { color: #b54708; }
 .demo-dest { font-size: 12px; line-height: 1.35; color: #475467; max-width: 330px; margin-right: auto; }
 
-/* 2 cấp: chip ▾ và khung xổ bên dưới hàng */
-.demo-exp { cursor: pointer; user-select: none; }
-.demo-exp .demo-chev { font-size: 10px; display: inline-block; margin-left: 2px; transition: transform .15s; }
+/* 2 cấp: chip ▾ và khung xổ bên dưới hàng.
+   Khung nối liền với chip cha: cùng màu nền xanh nhạt, mũi tên chỉ đúng chip, tiêu đề ghi tên chip cha,
+   chip con nhỏ hơn và nằm thụt vào sau vạch xanh bên trái, để nhìn là biết con của ai. */
+.demo-exp { cursor: pointer; user-select: none; transition: background-color .15s, border-color .15s; }
+.demo-exp .demo-chev { font-size: 10px; display: inline-block; margin-left: 2px; transition: transform .2s; }
 .demo-exp.is-open .demo-chev { transform: rotate(180deg); }
-.demo-exp.is-open { background: #f2f4f7 !important; }
-.demo-panel { flex-basis: 100%; width: 100%; background: #f9fafb; border: 1px solid #eaecf0; border-radius: 10px; padding: 10px 12px;
-  display: flex; flex-direction: column; gap: 8px; }
-.demo-panel.is-opening { animation: demoPanelIn .16s ease-out; }
+.demo-exp.is-open { background: #eff6ff !important; position: relative; z-index: 1; }
+.demo-exp.is-open:not(.is-on) { border-color: #93c5fd !important; }
+.demo-panel { --nx: 40px; position: relative; flex-basis: 100%; width: 100%; margin-top: 4px; background: #eff6ff; border: 1px solid #bfdbfe;
+  border-left: 4px solid #2f80ed; border-radius: 10px; padding: 10px 14px 12px; display: flex; flex-direction: column; gap: 8px; }
+.demo-notch { position: absolute; top: -8px; left: calc(var(--nx) - 8px); width: 14px; height: 14px; background: #eff6ff;
+  border-left: 1px solid #bfdbfe; border-top: 1px solid #bfdbfe; transform: rotate(45deg); }
+.demo-phead { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; font-size: 12.5px; color: #475467; }
+.demo-phead b { font-size: 13.5px; color: #1d4ed8; }
+.demo-phint { margin-left: auto; color: #667085; font-size: 12px; }
+.demo-panel.is-opening { animation: demoPanelIn .22s cubic-bezier(.2,.7,.3,1); transform-origin: var(--nx) top; }
+.demo-panel.is-opening .demo-chips > * { animation: demoChipIn .26s ease-out both; }
+.demo-panel.is-opening .demo-chips > *:nth-child(2) { animation-delay: .02s; } .demo-panel.is-opening .demo-chips > *:nth-child(3) { animation-delay: .04s; }
+.demo-panel.is-opening .demo-chips > *:nth-child(4) { animation-delay: .06s; } .demo-panel.is-opening .demo-chips > *:nth-child(n+5) { animation-delay: .08s; }
 .demo-line { display: flex; align-items: center; gap: 10px; }
 .demo-lab { flex: 0 0 104px; font-size: 12px; color: #667085; }
 .demo-panel.no-lab .demo-lab { display: none; }
 .demo-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.demo-panel .demo-chips > a { padding: 6px 11px !important; font-size: 13px; }
 .demo-head { font-weight: 600; }
-@media (max-width: 640px) { .demo-line { flex-direction: column; align-items: flex-start; gap: 4px; } .demo-lab { flex-basis: auto; } .demo-lab:empty { display: none; } }
-@keyframes demoPanelIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
-@media (prefers-reduced-motion: reduce) { .demo-panel.is-opening { animation: none; } }
+@media (max-width: 640px) { .demo-line { flex-direction: column; align-items: flex-start; gap: 4px; } .demo-lab { flex-basis: auto; } .demo-lab:empty { display: none; }
+  .demo-phint { margin-left: 0; flex-basis: 100%; } }
+@keyframes demoChipIn { from { opacity: 0; transform: translateY(-3px); } to { opacity: 1; transform: none; } }
+@keyframes demoPanelIn { from { opacity: 0; transform: translateY(-6px) scaleY(.96); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .demo-panel.is-opening, .demo-panel.is-opening .demo-chips > * { animation: none; } }
