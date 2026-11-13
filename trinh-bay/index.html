@@ -152,7 +152,6 @@ body:not(.mo-ct) .lc { display: none; }
   <span class="moc-lg"><i class="so it">50</i>Màu cam: chưa đủ <b id="moc-1"></b> lượt</span>
   <span class="sp"></span>
   <span class="hint">Rê chuột vào 1 giá trị để xem lý do</span>
-  <button class="lk" id="b-chi-tiet">Xem cách làm của từng cột</button>
 </div>
 <div class="cols" id="cols"></div>
 
@@ -217,10 +216,7 @@ cols.innerHTML = CFG.ban.map(b => `<section class="col" data-ban="${b.id}">
   <div class="head">
     <div class="h1r"><div class="ten"><h2>${esc(b.ten)}</h2><span class="mota">${esc(b.mo_ta)}</span></div><button class="btn b-full">Phóng to</button></div>
     <div class="h2r"><span class="stat"><b>${b.bo_loc}</b>thuộc tính</span><span class="stat"><b data-dem="dau">${b.dau}</b>giá trị thuộc tính${b.khung ? ' ở màn hình đầu' : ''}</span>${b.khung ? `<span class="stat"><b data-dem="khung">${b.khung}</b>giá trị thuộc tính trong khung ▾</span>` : ''}</div>
-    <div class="cg"><span class="the ${b.luat.ap}">${esc(b.luat.the)}</span>${b.cau ? `<span class="how">${esc(b.cau)}</span>` : ''}</div>
-    <div class="lc"><div class="lc-t">${esc(b.luat.tieu_de)}</div>
-      <ul>${b.luat.y.map(y => `<li>${esc(y[0])}${y[1] ? `<div class="vd">Ví dụ: ${esc(y[1])}</div>` : ''}</li>`).join('')}</ul>
-      ${b.luat.luu ? `<div class="lc-l">${esc(b.luat.luu)}</div>` : ''}</div>
+    ${b.luat.ap === 'chua' ? `<div class="cg" aria-hidden="true"><span class="the" style="visibility:hidden">&nbsp;</span></div>` : `<div class="cg"><span class="the ${b.luat.ap}">${esc(b.luat.the)}</span>${b.cau ? `<span class="how">${esc(b.cau)}</span>` : ''}</div>`}
   </div>
   <div class="frame"><iframe src="cot-${b.id}.html?v=${b.v}" title="Trang Laptop, bản ${esc(b.ten)}"></iframe></div></section>`).join('');
 $('#tog').innerHTML = CFG.ban.map(b => `<button class="tg" data-ban="${b.id}" aria-pressed="true">${esc(b.ten)}</button>`).join('');
@@ -310,11 +306,6 @@ bLuat.onclick = () => {
   const an = document.body.classList.toggle('an-luat');
   bLuat.classList.toggle('on', !an); bLuat.textContent = an ? 'Công thức: ẩn' : 'Công thức: hiện';
   frames.forEach(f => send(f, { type: 'moc', on: !an }));
-  requestAnimationFrame(layout);
-};
-$('#b-chi-tiet').onclick = e => {                     // 1 nút mở cách gộp ở đầu cả 4 cột, để so ngang
-  const mo = document.body.classList.toggle('mo-ct');
-  e.currentTarget.textContent = mo ? 'Thu gọn cách làm' : 'Xem cách làm của từng cột';
   requestAnimationFrame(layout);
 };
 
