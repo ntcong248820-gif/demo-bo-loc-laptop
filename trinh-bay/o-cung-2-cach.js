@@ -66,5 +66,6 @@
     bat = !bat;
     g.nut = bat ? NUT_BAT : NUT_TAT;
     if (window.demoMoKhung) window.demoMoKhung(G, null);  // vẽ lại bảng tại chỗ, demo giữ nguyên chỗ đang cuộn
+    if (parent !== window) parent.postMessage({ tb: 1, ban: T.ban, type: 'oc', bat }, '*');   // trang ngoài đổi số đầu cột theo
   });
 })();
