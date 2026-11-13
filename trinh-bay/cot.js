@@ -65,7 +65,21 @@
     applySel();
   }
   let pend = false;
-  new MutationObserver(() => { if (pend) return; pend = true; requestAnimationFrame(() => { pend = false; trimPage(); decorate(); fit(); placePin(); }); })
+  // Cột đang bấm đứng yên (owner 13/11): demo vẽ lại cả bảng sau mỗi lần bấm, hàng "Đã chọn" hiện ra ở đầu bảng đẩy mọi thứ xuống.
+  // Nhớ khối bộ lọc vừa bấm và chỗ của nó trong khung, vẽ lại xong thì kéo về đúng chỗ đó.
+  let neo = null;                                       // {tbg, off, het}
+  document.addEventListener('click', e => {
+    const bl = e.target.closest('#demo-pbody [data-tbg]'), b = pbody();
+    neo = bl && b ? { tbg: bl.dataset.tbg, off: bl.getBoundingClientRect().top - b.getBoundingClientRect().top, het: Date.now() + 600 } : null;
+  }, true);
+  function giuNeo() {
+    if (!neo) return;
+    if (Date.now() > neo.het) { neo = null; return; }
+    const b = pbody(), bl = b && $(`#demo-pbody [data-tbg="${neo.tbg}"]`); if (!bl) return;
+    const d = bl.getBoundingClientRect().top - b.getBoundingClientRect().top - neo.off;
+    if (Math.abs(d) > 0.5) b.scrollTop += d;
+  }
+  new MutationObserver(() => { if (pend) return; pend = true; requestAnimationFrame(() => { pend = false; trimPage(); decorate(); fit(); giuNeo(); placePin(); }); })
     .observe(document.body, { childList: true, subtree: true });
 
   /* ---------- vị trí bộ lọc trong bảng, cuộn đồng bộ ---------- */
@@ -75,6 +89,12 @@
     const ks = new Set(keys), bls = $$('[data-tbg]', pbody());
     const exact = bls.find(bl => blockKeys(bl).some(k => k.startsWith('ten|') && ks.has(k)));
     return exact || bls.find(bl => blockKeys(bl).some(k => ks.has(k)));
+  }
+  const relOf = bl => { const b = pbody(); return (bl.getBoundingClientRect().top - b.getBoundingClientRect().top) / b.clientHeight; };
+  function alignTo(keys, rel) {                         // khối bộ lọc tương ứng nằm cùng chỗ (tính theo tỉ lệ chiều cao khung) như ở cột vừa bấm
+    const b = pbody(), bl = b && findBlock(keys); if (!bl) return;
+    if (rel == null) return goTo(keys, 0, true);
+    b.scrollTo({ top: Math.max(0, blockPos(bl) - rel * b.clientHeight), behavior: 'smooth' });
   }
   function goTo(keys, frac, smooth) {
     const b = pbody(), bl = b && findBlock(keys); if (!bl) return;
@@ -158,12 +178,12 @@
     if (firstId) {
       const el = $(`#demo-pbody [data-tbid="${CSS.escape(firstId)}"]`);
       const bl = el.closest('[data-tbg]');
-      if (bl) goTo(blockKeys(bl), 0, true);
+      if (bl && !mine) alignTo(blockKeys(bl), m.rel);   // cột vừa bấm đứng yên
       // cột vừa bấm là đang lọc: không ghim ghi chú để khỏi đè lên khung vừa mở; cột kia mới ghim
       pinFor = mine ? null : { sel: `#demo-pbody [data-tbid="${CSS.escape(firstId)}"]`, text: ghi(firstId).cau };
     } else {
       pinFor = null;
-      if (m.nhomKeys) goTo(m.nhomKeys, 0, true);
+      if (m.nhomKeys && !mine) alignTo(m.nhomKeys, m.rel);
     }
     hideHover();
     setTimeout(placePin, 30); setTimeout(placePin, 700);
@@ -174,7 +194,7 @@
     applySel();
     const bl = findBlock(m.keys);
     if (bl) {
-      goTo(m.keys, 0, true);
+      if (m.ban !== BAN) alignTo(m.keys, m.rel);         // cột vừa bấm đứng yên
       const g = bl.dataset.tbg === 'th' ? null : TB.nhom[+bl.dataset.tbg];
       pinFor = g && g.cau ? { sel: `#demo-pbody [data-tbg="${bl.dataset.tbg}"] > p`, text: g.cau } : null;
     } else pinFor = null;
@@ -185,19 +205,19 @@
   document.addEventListener('click', e => {
     if (!notesOn || !e.isTrusted) return;
     const h = e.target.closest('#demo-pbody [data-tbg] > p');
-    if (h) { const bl = h.parentElement; return post({ type: 'nhom', keys: blockKeys(bl) }); }
+    if (h) { const bl = h.parentElement; return post({ type: 'nhom', keys: blockKeys(bl), rel: relOf(bl) }); }
     // Bấm giá trị là lọc thật ở cột này (owner chốt 12/11), đồng thời cột kia cuộn tới giá trị tương ứng.
     const c = e.target.closest('#demo-pbody [data-pnode]');
     if (c && c.dataset.tbid) {
       if (c.className.includes('!border-blue-5')) return post({ type: 'bo' });   // đang chọn: bấm là bỏ chọn, thôi tô
       const bl = c.closest('[data-tbg]');
-      return post({ type: 'chon', keys: ghi(c.dataset.tbid).k, id: c.dataset.tbid, ten: N[c.dataset.tbid].ten.toLowerCase(), nhomKeys: bl ? blockKeys(bl) : null });
+      return post({ type: 'chon', keys: ghi(c.dataset.tbid).k, id: c.dataset.tbid, ten: N[c.dataset.tbid].ten.toLowerCase(), nhomKeys: bl ? blockKeys(bl) : null, rel: bl ? relOf(bl) : null });
     }
     const x = e.target.closest('#demo-pbody [data-pexp]');
     if (x && x.dataset.tbid) {
       if (x.classList.contains('is-open')) { post({ type: 'bo' }); return; }
       const bl = x.closest('[data-tbg]');
-      return post({ type: 'chon', keys: ghi(x.dataset.tbid).k, id: x.dataset.tbid, ten: N[x.dataset.tbid].ten.toLowerCase(), nhomKeys: bl ? blockKeys(bl) : null });
+      return post({ type: 'chon', keys: ghi(x.dataset.tbid).k, id: x.dataset.tbid, ten: N[x.dataset.tbid].ten.toLowerCase(), nhomKeys: bl ? blockKeys(bl) : null, rel: bl ? relOf(bl) : null });
     }
     if (e.target.closest('#demo-pbody') && !e.target.closest('a,button,input')) post({ type: 'bo' });
   }, true);
