@@ -735,6 +735,30 @@ body.qt .col[data-ban="pa3"] .lc { display: none; }
   requestAnimationFrame(layout);
 }
 
+/* Nút đổi 2 cách cho bộ lọc Ổ cứng ở đầu cột Phương án 2 cấp (owner 13/11/2026). build-trinh-bay-3-ban.py chèn vào trang.
+ * Bấm thì nạp lại khung cột với ?oc=1 / ?oc=2; trang cột tự đổi dữ liệu Ổ cứng (trinh-bay-o-cung-2-cach-cot.js). */
+(function () {
+  const col = document.querySelector('.col[data-ban="pa3"]');
+  if (!col) return;
+  const f = col.querySelector('iframe'), h = col.querySelector('.h1r');
+  document.head.insertAdjacentHTML('beforeend', `<style>
+    .oc-sw { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin: 6px 0 2px; font-size: 13px; }
+    .oc-sw > span { color: #555; font-weight: 600; }
+    .oc-sw .btn { padding: 4px 10px; font-size: 13px; }
+  </style>`);
+  h.insertAdjacentHTML('afterend', `<div class="oc-sw" role="group" aria-label="Thử 2 cách cho bộ lọc Ổ cứng">
+    <span>Ổ cứng:</span>
+    <button class="btn on" data-oc="1" title="SSD 2 TB, 3 TB, 6 TB nằm trong khung Ổ cứng khác">Như hiện tại</button>
+    <button class="btn" data-oc="2" title="SSD 2 TB hiện riêng; SSD 3 TB và 6 TB gộp thành 1 nút Ổ cứng khác, không mở khung">SSD 2 TB ra ngoài</button></div>`);
+  const sw = col.querySelector('.oc-sw');
+  sw.addEventListener('click', e => {
+    const b = e.target.closest('[data-oc]');
+    if (!b || b.classList.contains('on') && f.src.includes('oc=')) return;
+    sw.querySelectorAll('[data-oc]').forEach(x => x.classList.toggle('on', x === b));
+    f.src = 'cot-pa3.html?oc=' + b.dataset.oc;
+  });
+})();
+
 if (CFG.qt) { initQT(); initLuatQT(); } else veThu();
 layout();
 </script>
